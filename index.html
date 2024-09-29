@@ -1,0 +1,664 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎来到 isla7940 的个人网站</title>
+    <style>
+        /* 通用样式 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #fffacd; /* 浅黄色背景 */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* 头部样式 */
+        header {
+            background-color: #f0e68c; /* 深浅黄色 */
+            color: #333;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            padding: 80px 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 3em;
+            animation: slideIn 2s forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-50%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 导航栏样式 */
+        nav {
+            background-color: #eee8aa;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        nav a {
+            margin: 0 15px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            position: relative;
+            padding: 10px 0; /* 增大点击区域 */
+            display: inline-block;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            background-color: #ff8c00;
+            left: 0;
+            bottom: -5px;
+            transition: width 0.3s;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* 主内容区样式 */
+        main {
+            padding: 40px 20px;
+        }
+
+        .section {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+            margin-bottom: 60px;
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 小标题样式 */
+        .section h2 {
+            position: relative;
+            display: inline-block;
+            padding: 10px 15px;
+            background: linear-gradient(to right, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 0));
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        /* 分割线 */
+        .divider {
+            height: 1px;
+            background-color: rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background-color: #fafad2;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 15px; /* 圆角化 */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            flex: 1 1 calc(33% - 40px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.15);
+        }
+
+        /* 项目展示区域 */
+        .projects-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+            gap: 20px;
+        }
+
+        /* 按钮样式 */
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #ff8c00;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background-color 0.3s;
+            text-align: center;
+            margin-top: auto;
+            user-select: none;
+        }
+
+        .button:hover {
+            background-color: #e67e22;
+        }
+
+        /* 底部样式 */
+        footer {
+            background-color: #f5deb3;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* 项目详情页 */
+        .project-detail {
+            display: none;
+            padding: 40px 20px;
+        }
+
+        .project-detail h2 {
+            margin-top: 0;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background-color: #ff8c00;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #e67e22;
+        }
+
+        /* 聊天框样式 */
+        #chat-container {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            max-width: 400px;
+            height: 60%;
+            background-color: #f0e68c; /* 深黄色，与页面区分 */
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+            padding: 20px;
+            z-index: 1000;
+            overflow: hidden;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        #chat-messages {
+            height: calc(100% - 50px); /* 减去输入框的高度 */
+            overflow-y: auto;
+            margin-bottom: 10px;
+            /* 隐藏滚动条 */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        #chat-messages::-webkit-scrollbar {
+            display: none; /* Chrome, Safari 和 Opera */
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        .message .content {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            position: relative;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            font-size: 16px; /* 增大字体以适应触摸设备 */
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.user .content {
+            background-color: #ffecb3;
+            border-top-right-radius: 0;
+        }
+
+        .message.assistant {
+            justify-content: flex-start;
+        }
+
+        .message.assistant .content {
+            background-color: #e0f7fa;
+            border-top-left-radius: 0;
+        }
+
+        #chat-input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px; /* 增大字体以适应触摸设备 */
+        }
+
+        /* 聊天按钮样式 */
+        #chat-toggle-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: #ff8c00; /* 深黄色 */
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #chat-toggle-button:hover {
+            background-color: #e67e22;
+            transform: scale(1.05);
+        }
+
+        /* 返回顶部按钮样式 */
+        #back-to-top-button {
+            position: fixed;
+            bottom: 30px; /* 与聊天按钮保持一致的底部间距 */
+            left: 30px; /* 移动到左下角 */
+            width: 50px;
+            height: 50px;
+            background-color: #ff8c00;
+            color: #fff;
+            border: none;
+            border-radius: 50%; /* 圆形 */
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: none;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #back-to-top-button:hover {
+            background-color: #e67e22;
+            transform: scale(1.05);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .card {
+                flex: 1 1 calc(50% - 40px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .card {
+                flex: 1 1 100%;
+            }
+
+            nav a {
+                margin: 0 10px;
+                padding: 10px 5px; /* 增大点击区域 */
+            }
+
+            #chat-toggle-button, #back-to-top-button {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Isla7940's homepage</h1>
+    </header>
+
+    <nav aria-label="主导航">
+        <a href="#home" onclick="navigate(event, 'home')" aria-label="跳转到主页">主页</a>
+        <a href="#projects" onclick="navigate(event, 'projects')" aria-label="跳转到项目展示">项目展示</a>
+        <a href="#contact" onclick="navigate(event, 'contact')" aria-label="跳转到联系我">联系我</a>
+    </nav>
+
+    <main id="main-content">
+        <!-- 主页和关于我内容 -->
+        <section id="home" class="section">
+            <h2>关于我</h2>
+            <div class="divider"></div>
+            <p>大家好，我是 isla7940，一名全栈开发工程师，精通 JavaScript、Python，以及各种前端和后端框架，如 React、Vue、Node.js、Django 等。</p>
+            <p>我热衷于构建高效、用户友好的应用程序，拥有丰富的项目经验，包括在线教育平台、电商网站、社交媒体应用等。</p>
+            <p>我喜欢学习新技术，解决复杂的问题，并乐于分享我的知识和经验。</p>
+        </section>
+
+        <!-- 项目展示 -->
+        <section id="projects" class="section">
+            <h2>项目展示</h2>
+            <div class="divider"></div>
+            <div class="projects-container">
+                <div class="card" onclick="showProjectDetail('project1')">
+                    <h3>在线教育平台</h3>
+                    <p>一个为学生和教师提供互动教学的在线平台。</p>
+                    <span class="button">了解更多</span>
+                </div>
+                <div class="card" onclick="showProjectDetail('project2')">
+                    <h3>电商网站</h3>
+                    <p>一个具有实时库存管理和支付功能的电商网站。</p>
+                    <span class="button">了解更多</span>
+                </div>
+                <div class="card" onclick="showProjectDetail('project3')">
+                    <h3>社交媒体应用</h3>
+                    <p>一个连接世界各地用户的社交媒体应用程序。</p>
+                    <span class="button">了解更多</span>
+                </div>
+                <!-- 更多项目卡片 -->
+                <div class="card" onclick="showProjectDetail('project4')">
+                    <h3>任务管理工具</h3>
+                    <p>帮助团队协作和提高效率的任务管理工具。</p>
+                    <span class="button">了解更多</span>
+                </div>
+                <div class="card" onclick="showProjectDetail('project5')">
+                    <h3>博客平台</h3>
+                    <p>一个支持多媒体内容的现代化博客平台。</p>
+                    <span class="button">了解更多</span>
+                </div>
+                <div class="card" onclick="showProjectDetail('project6')">
+                    <h3>数据可视化仪表盘</h3>
+                    <p>用于展示复杂数据的交互式可视化工具。</p>
+                    <span class="button">了解更多</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系我 -->
+        <section id="contact" class="section">
+            <h2>联系我</h2>
+            <div class="divider"></div>
+            <p>欢迎通过以下方式与我联系：</p>
+            <p>邮箱：<a href="mailto:sunronsen@hotmail.com">sunronsen@hotmail.com</a></p>
+            <p>GitHub：<a href="https://github.com/isla7940" target="_blank">Isla7940</a></p>
+            <p>QQ：<a href="3354267128" target="_blank">3354267128</a></p>
+            <p>Bili：<a href="https://space.bilibili.com/410236984" target="_blank">Isla7940</a></p>
+        </section>
+    </main>
+
+    <!-- 项目详情页 -->
+    <div id="project-detail" class="project-detail">
+        <a href="#" class="back-button" onclick="backToMain()">返回</a>
+        <div id="project-content">
+            <!-- 项目详细内容将在这里加载 -->
+        </div>
+    </div>
+
+    <!-- 聊天按钮 -->
+    <button id="chat-toggle-button" aria-label="打开聊天窗口">💬</button>
+
+    <!-- 聊天框 -->
+    <div id="chat-container">
+        <div id="chat-messages">
+            <!-- 聊天消息将显示在这里 -->
+        </div>
+        <input type="text" id="chat-input" placeholder="输入消息..." onkeydown="if(event.key === 'Enter') sendMessage()">
+    </div>
+
+    <!-- 返回顶部按钮 -->
+    <button id="back-to-top-button" aria-label="返回顶部">↑</button>
+
+    <footer>
+        &copy; 2024 Isla7940. 保留所有权利
+    </footer>
+
+    <script>
+        // 平滑滚动导航
+        function navigate(event, sectionId) {
+            event.preventDefault();
+            document.getElementById(sectionId).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        // 返回主页
+        function backToMain() {
+            document.getElementById('project-detail').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 显示项目详情
+        function showProjectDetail(projectId) {
+            const projectContent = {
+                'project1': {
+                    title: '在线教育平台',
+                    content: '<p>该平台旨在连接学生和教师，提供实时互动的在线课程。使用了 React 和 Node.js 开发，实现了视频直播、作业提交和讨论区等功能。</p>'
+                },
+                'project2': {
+                    title: '电商网站',
+                    content: '<p>开发了一个功能完整的电商网站，支持产品浏览、购物车、订单支付等功能。使用了 Django 和 Vue.js，实现了高效的后台管理和友好的用户界面。</p>'
+                },
+                'project3': {
+                    title: '社交媒体应用',
+                    content: '<p>创建了一个社交媒体应用，用户可以分享动态、关注好友、发送消息。使用了 Flutter 开发移动端，后端采用了 Firebase。</p>'
+                },
+                'project4': {
+                    title: '任务管理工具',
+                    content: '<p>这是一款帮助团队协作的任务管理工具，支持任务分配、进度跟踪和通知提醒。使用了 Angular 和 Spring Boot 开发。</p>'
+                },
+                'project5': {
+                    title: '博客平台',
+                    content: '<p>搭建了一个现代化的博客平台，支持 Markdown 编辑、多媒体内容和评论功能。使用了 Ruby on Rails 开发。</p>'
+                },
+                'project6': {
+                    title: '数据可视化仪表盘',
+                    content: '<p>开发了一个数据可视化工具，可以将复杂的数据以图表形式展示，支持实时更新和交互操作。使用了 D3.js 和 WebSocket。</p>'
+                }
+            };
+
+            document.getElementById('project-content').innerHTML = `
+                <h2>${projectContent[projectId].title}</h2>
+                ${projectContent[projectId].content}
+            `;
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('project-detail').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 信息流滚动渐入效果
+        const sections = document.querySelectorAll('.section');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        // 返回顶部按钮
+        const backToTopButton = document.getElementById('back-to-top-button');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.style.display = 'block';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // 聊天按钮功能
+        const chatToggleButton = document.getElementById('chat-toggle-button');
+        const chatContainer = document.getElementById('chat-container');
+
+        chatToggleButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            chatContainer.style.display = chatContainer.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // 点击聊天区域外收起聊天框
+        document.addEventListener('click', (event) => {
+            if (chatContainer.style.display === 'block' && !chatContainer.contains(event.target) && event.target !== chatToggleButton) {
+                chatContainer.style.display = 'none';
+            }
+        });
+
+        // 聊天功能
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            displayMessage('user', message);
+            input.value = '';
+
+            // 显示助手正在输入的提示
+            const assistantMessageId = displayMessage('assistant', '正在输入...', true);
+
+            // 准备请求参数
+            const url = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+            const apiKey = 'c3da00ada2bba598e45db8dbf607af90.MdV3et6BFLURi2sy'; // 请将此替换为您的 API Key
+
+            const requestData = {
+                "model": "glm-4-flash",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "你是isla7940个人主页的助手，你扮演一个替身人格，你的任务是告知用户 isla7940 是一个怎么样的人。下面是 isla7940 的相关信息（isla7940，一名全栈开发工程师，精通 JavaScript、Python，以及各种前端和后端框架，如 React、Vue、Node.js、Django 等。他热衷于构建高效、用户友好的应用程序，拥有丰富的项目经验，包括在线教育平台、电商网站、社交媒体应用等。他的邮箱是sunronsen@hotmail.com，QQ是3354267128）。"
+                    },
+                    {
+                        "role": "user",
+                        "content": message
+                    }
+                ],
+                "top_p": 0.7,
+                "temperature": 0.95,
+                "max_tokens": 1024,
+                "stream": true
+            };
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + apiKey,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+                let assistantMessage = '';
+                let doneReading = false;
+
+                while (!doneReading) {
+                    const { done, value } = await reader.read();
+                    if (done) {
+                        doneReading = true;
+                        break;
+                    }
+                    const text = decoder.decode(value);
+
+                    // 解析 JSON 并提取 content 字段
+                    const lines = text.split('\n');
+                    for (let line of lines) {
+                        if (line.startsWith('data:')) {
+                            line = line.replace('data: ', '').trim();
+                            if (line === '[DONE]') {
+                                doneReading = true;
+                                break;
+                            }
+                            try {
+                                const json = JSON.parse(line);
+                                const content = json.choices[0].delta.content || '';
+                                assistantMessage += content.replace(/\\n/g, '\n');
+                                updateAssistantMessage(assistantMessageId, assistantMessage);
+                            } catch (e) {
+                                console.error('JSON parse error:', e);
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                updateAssistantMessage(assistantMessageId, '抱歉，发生了错误，请稍后再试。');
+            }
+        }
+
+        function displayMessage(role, content, isTemporary = false) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', role);
+            const contentElement = document.createElement('div');
+            contentElement.classList.add('content');
+            contentElement.textContent = content;
+            messageElement.appendChild(contentElement);
+
+            if (isTemporary) {
+                const tempId = 'temp-assistant-message-' + Date.now();
+                messageElement.id = tempId;
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                return tempId;
+            } else {
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                return null;
+            }
+        }
+
+        function updateAssistantMessage(messageId, content) {
+            const messageElement = document.getElementById(messageId);
+            if (messageElement) {
+                const contentElement = messageElement.querySelector('.content');
+                contentElement.textContent = content;
+            } else {
+                displayMessage('assistant', content);
+            }
+        }
+    </script>
+
+</body>
+</html>
