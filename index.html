@@ -19,6 +19,12 @@
             padding: 0;
             overflow-x: hidden;
             scroll-behavior: smooth;
+            transition: overflow 0.3s ease;
+        }
+
+        /* 禁用滚动 */
+        body.no-scroll {
+            overflow: hidden;
         }
 
         /* 头部样式 */
@@ -66,7 +72,7 @@
             text-align: center;
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 1000; /* 确保导航栏在覆盖层下方 */
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
@@ -254,7 +260,6 @@
             background-color: #e67e22;
         }
 
-        /* 聊天按钮和对话框相关样式 */
         /* 覆盖层样式 */
         .overlay {
             display: none; /* 默认隐藏 */
@@ -264,7 +269,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5); /* 半透明黑色 */
-            z-index: 999; /* 位于其他内容之上 */
+            z-index: 1001; /* 高于导航栏 */
         }
 
         /* 聊天框样式 */
@@ -279,7 +284,7 @@
             background-color: #f0e68c; /* 深黄色，与页面区分 */
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
             border-radius: 10px;
-            z-index: 1000;
+            z-index: 1002; /* 高于覆盖层 */
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -362,7 +367,7 @@
             font-size: 24px;
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            z-index: 1001;
+            z-index: 1003; /* 高于聊天框 */
             transition: background-color 0.3s, transform 0.3s;
         }
 
@@ -389,6 +394,12 @@
 
             .card {
                 flex: 1 1 calc(50% - 20px);
+            }
+
+            /* PC端聊天框优化 */
+            #chat-container {
+                width: 400px;
+                height: 500px;
             }
         }
 
@@ -695,6 +706,7 @@
         function openChat() {
             chatContainer.style.display = 'flex';
             chatOverlay.style.display = 'block';
+            document.body.classList.add('no-scroll'); // 禁用主页面滚动
             // 聚焦输入框
             document.getElementById('chat-input').focus();
         }
@@ -702,6 +714,7 @@
         function closeChat() {
             chatContainer.style.display = 'none';
             chatOverlay.style.display = 'none';
+            document.body.classList.remove('no-scroll'); // 恢复主页面滚动
         }
 
         // 聊天功能
@@ -820,18 +833,7 @@
         }
 
         // 防止移动端点击输入框时页面上移
-        // 保持聊天对话框固定，不随键盘弹出而移动
-        // 使用viewport height和flex布局确保输入框始终可见
-        window.addEventListener('resize', () => {
-            // 不需要额外处理，因为聊天对话框使用 fixed 定位
-        });
-
-        // 初始调整聊天框高度
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.innerWidth <= 768) {
-                // 可根据需要调整
-            }
-        });
+        // 已通过禁用body滚动和固定聊天框位置解决
     </script>
 
 </body>
