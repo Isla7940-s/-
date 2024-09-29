@@ -42,7 +42,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.4); /* 半透明黑色覆盖 */
-            backdrop-filter: blur(2px); /* 降低模糊效果 */
+            backdrop-filter: blur(1px); /* 降低模糊效果 */
             z-index: 1;
         }
 
@@ -254,51 +254,69 @@
             background-color: #e67e22;
         }
 
+        /* 聊天按钮和对话框相关样式 */
+        /* 覆盖层样式 */
+        .overlay {
+            display: none; /* 默认隐藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* 半透明黑色 */
+            z-index: 999; /* 位于其他内容之上 */
+        }
+
         /* 聊天框样式 */
         #chat-container {
             display: none;
             position: fixed;
-            bottom: 0;
-            right: 0;
-            width: 100%;
-            max-width: 400px;
-            height: 60%;
+            bottom: 80px; /* 留出聊天按钮的空间 */
+            right: 20px;
+            width: 300px;
+            max-width: 90%;
+            height: 400px;
             background-color: #f0e68c; /* 深黄色，与页面区分 */
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
-            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border-radius: 10px;
             z-index: 1000;
-            overflow: hidden;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
+        /* 聊天消息区域 */
         #chat-messages {
             flex: 1;
+            padding: 10px;
             overflow-y: auto;
-            margin-bottom: 10px;
-            /* 隐藏滚动条 */
-            scrollbar-width: none; /* Firefox */
+            background-color: #fffacd; /* 浅黄色背景 */
         }
 
+        /* 隐藏滚动条 */
         #chat-messages::-webkit-scrollbar {
             display: none; /* Chrome, Safari 和 Opera */
         }
 
+        #chat-messages {
+            -ms-overflow-style: none;  /* IE 和 Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        /* 单条消息样式 */
         .message {
             display: flex;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .message .content {
-            max-width: 70%;
+            max-width: 80%;
             padding: 8px 12px;
             border-radius: 15px;
             position: relative;
             word-wrap: break-word;
             white-space: pre-wrap;
-            font-size: 1em; /* 调整字体大小 */
+            font-size: 0.95em;
         }
 
         .message.user {
@@ -319,13 +337,15 @@
             border-top-left-radius: 0;
         }
 
+        /* 聊天输入框 */
         #chat-input {
-            width: 100%;
-            padding: 8px;
             border: none;
-            border-radius: 5px;
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            font-size: 1em;
+            outline: none;
+            width: 100%;
             box-sizing: border-box;
-            font-size: 1em; /* 调整字体大小 */
         }
 
         /* 聊天按钮样式 */
@@ -342,35 +362,11 @@
             font-size: 24px;
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            z-index: 1000;
+            z-index: 1001;
             transition: background-color 0.3s, transform 0.3s;
         }
 
         #chat-toggle-button:hover {
-            background-color: #e67e22;
-            transform: scale(1.05);
-        }
-
-        /* 返回顶部按钮样式 */
-        #back-to-top-button {
-            position: fixed;
-            bottom: 20px; /* 与聊天按钮保持一致的底部间距 */
-            left: 20px; /* 移动到左下角 */
-            width: 40px;
-            height: 40px;
-            background-color: #ff8c00;
-            color: #fff;
-            border: none;
-            border-radius: 50%; /* 圆形 */
-            font-size: 20px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            z-index: 1000;
-            display: none;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-
-        #back-to-top-button:hover {
             background-color: #e67e22;
             transform: scale(1.05);
         }
@@ -397,11 +393,6 @@
         }
 
         @media (max-width: 768px) {
-            /* 隐藏返回顶部按钮 */
-            #back-to-top-button {
-                display: none;
-            }
-
             nav .nav-links {
                 display: none;
                 flex-direction: column;
@@ -412,6 +403,8 @@
                 left: 0;
                 box-shadow: 0 2px 5px rgba(0,0,0,0.1);
                 max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.5s ease-in-out;
             }
 
             nav .nav-links.active {
@@ -455,15 +448,10 @@
                 font-size: 20px;
             }
 
-            /* 优化移动端菜单动画 */
-            .nav-links {
-                transition: max-height 0.5s ease-in-out;
-            }
-
             /* 防止聊天框因键盘弹出而移动 */
             #chat-container {
+                bottom: 80px; /* 保持与聊天按钮的距离 */
                 height: 50%; /* 减少高度以适应键盘 */
-                bottom: 0; /* 确保固定在底部 */
             }
         }
     </style>
@@ -556,8 +544,8 @@
         </div>
     </div>
 
-    <!-- 聊天按钮 -->
-    <button id="chat-toggle-button" aria-label="打开聊天窗口">💬</button>
+    <!-- 覆盖层 -->
+    <div class="overlay" id="chat-overlay" onclick="closeChat()"></div>
 
     <!-- 聊天框 -->
     <div id="chat-container">
@@ -567,8 +555,8 @@
         <input type="text" id="chat-input" placeholder="输入消息..." onkeydown="if(event.key === 'Enter') sendMessage()" autocomplete="off">
     </div>
 
-    <!-- 返回顶部按钮 -->
-    <button id="back-to-top-button" aria-label="返回顶部">↑</button>
+    <!-- 聊天按钮 -->
+    <button id="chat-toggle-button" aria-label="打开聊天窗口">💬</button>
 
     <footer>
         &copy; 2024 Isla7940. 保留所有权利
@@ -653,42 +641,68 @@
             observer.observe(section);
         });
 
-        // 返回顶部按钮
-        const backToTopButton = document.getElementById('back-to-top-button');
-
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 300) {
-                backToTopButton.style.display = 'block';
+        // 汉堡菜单切换
+        function toggleNav(forceState) {
+            const navLinks = document.getElementById('nav-links');
+            const hamburger = document.querySelector('.hamburger');
+            if (typeof forceState === 'boolean') {
+                if (forceState) {
+                    navLinks.classList.add('active');
+                    hamburger.classList.add('active');
+                    hamburger.setAttribute('aria-expanded', 'true');
+                } else {
+                    navLinks.classList.remove('active');
+                    hamburger.classList.remove('active');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                }
             } else {
-                backToTopButton.style.display = 'none';
+                const isActive = navLinks.classList.toggle('active');
+                hamburger.classList.toggle('active');
+                hamburger.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+            }
+        }
+
+        // 关闭导航菜单点击外部
+        document.addEventListener('click', function(event) {
+            const navLinks = document.getElementById('nav-links');
+            const hamburger = document.querySelector('.hamburger');
+            if (window.innerWidth <= 768 && navLinks.classList.contains('active') && !navLinks.contains(event.target) && !hamburger.contains(event.target)) {
+                toggleNav(false);
             }
         });
 
-        backToTopButton.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        // 聊天按钮功能
+        // 聊天按钮和对话框逻辑
         const chatToggleButton = document.getElementById('chat-toggle-button');
         const chatContainer = document.getElementById('chat-container');
+        const chatOverlay = document.getElementById('chat-overlay');
 
+        // 打开聊天对话框
         chatToggleButton.addEventListener('click', (event) => {
             event.stopPropagation();
-            if (chatContainer.style.display === 'flex') {
-                chatContainer.style.display = 'none';
-            } else {
-                chatContainer.style.display = 'flex';
-                // 聚焦输入框
-                document.getElementById('chat-input').focus();
-            }
+            openChat();
         });
 
-        // 点击聊天区域外收起聊天框
-        document.addEventListener('click', (event) => {
-            if (chatContainer.style.display === 'flex' && !chatContainer.contains(event.target) && event.target !== chatToggleButton) {
-                chatContainer.style.display = 'none';
-            }
+        // 点击覆盖层关闭聊天对话框
+        chatOverlay.addEventListener('click', () => {
+            closeChat();
         });
+
+        // 防止点击聊天对话框内的内容关闭对话框
+        chatContainer.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        function openChat() {
+            chatContainer.style.display = 'flex';
+            chatOverlay.style.display = 'block';
+            // 聚焦输入框
+            document.getElementById('chat-input').focus();
+        }
+
+        function closeChat() {
+            chatContainer.style.display = 'none';
+            chatOverlay.style.display = 'none';
+        }
 
         // 聊天功能
         async function sendMessage() {
@@ -805,50 +819,17 @@
             }
         }
 
-        // 汉堡菜单切换
-        function toggleNav(forceState) {
-            const navLinks = document.getElementById('nav-links');
-            const hamburger = document.querySelector('.hamburger');
-            if (typeof forceState === 'boolean') {
-                if (forceState) {
-                    navLinks.classList.add('active');
-                    hamburger.classList.add('active');
-                    hamburger.setAttribute('aria-expanded', 'true');
-                } else {
-                    navLinks.classList.remove('active');
-                    hamburger.classList.remove('active');
-                    hamburger.setAttribute('aria-expanded', 'false');
-                }
-            } else {
-                const isActive = navLinks.classList.toggle('active');
-                hamburger.classList.toggle('active');
-                hamburger.setAttribute('aria-expanded', isActive ? 'true' : 'false');
-            }
-        }
-
-        // 关闭导航菜单点击外部
-        document.addEventListener('click', function(event) {
-            const navLinks = document.getElementById('nav-links');
-            const hamburger = document.querySelector('.hamburger');
-            if (window.innerWidth <= 768 && navLinks.classList.contains('active') && !navLinks.contains(event.target) && !hamburger.contains(event.target)) {
-                toggleNav(false);
-            }
-        });
-
         // 防止移动端点击输入框时页面上移
-        // 通过保持聊天框固定在底部，并适当调整高度
+        // 保持聊天对话框固定，不随键盘弹出而移动
+        // 使用viewport height和flex布局确保输入框始终可见
         window.addEventListener('resize', () => {
-            if (window.innerWidth <= 768 && chatContainer.style.display === 'flex') {
-                chatContainer.style.height = '50%';
-            } else {
-                chatContainer.style.height = '60%';
-            }
+            // 不需要额外处理，因为聊天对话框使用 fixed 定位
         });
 
         // 初始调整聊天框高度
         document.addEventListener('DOMContentLoaded', () => {
             if (window.innerWidth <= 768) {
-                chatContainer.style.height = '50%';
+                // 可根据需要调整
             }
         });
     </script>
