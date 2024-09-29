@@ -42,7 +42,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.4); /* 半透明黑色覆盖 */
-            backdrop-filter: blur(5px); /* 模糊效果 */
+            backdrop-filter: blur(2px); /* 降低模糊效果 */
             z-index: 1;
         }
 
@@ -78,6 +78,11 @@
             gap: 15px;
             transition: max-height 0.3s ease-in-out;
             overflow: hidden;
+            max-height: 0;
+        }
+
+        nav .nav-links.active {
+            max-height: 500px; /* 足够容纳所有导航链接 */
         }
 
         nav a {
@@ -374,6 +379,7 @@
         @media (min-width: 769px) {
             nav .nav-links {
                 display: flex;
+                max-height: none;
             }
 
             .hamburger {
@@ -443,7 +449,7 @@
                 font-size: 0.9em;
             }
 
-            #chat-toggle-button, #back-to-top-button {
+            #chat-toggle-button {
                 width: 40px;
                 height: 40px;
                 font-size: 20px;
@@ -457,6 +463,7 @@
             /* 防止聊天框因键盘弹出而移动 */
             #chat-container {
                 height: 50%; /* 减少高度以适应键盘 */
+                bottom: 0; /* 确保固定在底部 */
             }
         }
     </style>
@@ -667,7 +674,13 @@
 
         chatToggleButton.addEventListener('click', (event) => {
             event.stopPropagation();
-            chatContainer.style.display = chatContainer.style.display === 'flex' ? 'none' : 'flex';
+            if (chatContainer.style.display === 'flex') {
+                chatContainer.style.display = 'none';
+            } else {
+                chatContainer.style.display = 'flex';
+                // 聚焦输入框
+                document.getElementById('chat-input').focus();
+            }
         });
 
         // 点击聊天区域外收起聊天框
@@ -823,11 +836,19 @@
         });
 
         // 防止移动端点击输入框时页面上移
+        // 通过保持聊天框固定在底部，并适当调整高度
         window.addEventListener('resize', () => {
             if (window.innerWidth <= 768 && chatContainer.style.display === 'flex') {
                 chatContainer.style.height = '50%';
             } else {
                 chatContainer.style.height = '60%';
+            }
+        });
+
+        // 初始调整聊天框高度
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth <= 768) {
+                chatContainer.style.height = '50%';
             }
         });
     </script>
