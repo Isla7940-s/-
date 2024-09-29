@@ -23,7 +23,7 @@
 
         /* 头部样式 */
         header {
-            background-image: url('https://t.mwm.moe/pc'); /* 设置背景图片 */
+            background-image: url('https://t.mwm.moe/pc'); /* 更换背景图片 */
             background-size: cover;
             background-position: center;
             color: #fff;
@@ -31,26 +31,13 @@
             position: relative;
             overflow: hidden;
             padding: 60px 10px; /* 减小内边距以适应小屏 */
-            background-color: rgba(240, 230, 140, 0.8); /* 添加半透明覆盖层以提升文字可读性 */
-        }
-
-        header::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(240, 230, 140, 0.5); /* 半透明覆盖层 */
-            z-index: 1;
         }
 
         header h1 {
-            position: relative;
-            z-index: 2;
             margin: 0;
             font-size: 2em; /* 减小字体大小 */
             animation: slideIn 2s forwards;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5); /* 增加文本阴影以提高可读性 */
         }
 
         @keyframes slideIn {
@@ -60,9 +47,8 @@
 
         /* 导航栏样式 */
         nav {
-            background-color: #eee8aa;
-            padding: 10px;
-            text-align: center;
+            background-color: rgba(238, 232, 170, 0.9); /* 半透明背景 */
+            padding: 10px 20px;
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -70,19 +56,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: background-color 0.3s;
         }
 
         nav .nav-links {
             display: flex;
             gap: 15px;
-            max-height: 0;
+            transition: max-height 0.3s ease-in-out;
             overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-
-        nav .nav-links.active {
-            max-height: 300px; /* 足够显示所有菜单项 */
-            transition: max-height 0.5s ease-in;
         }
 
         nav a {
@@ -115,7 +96,6 @@
             flex-direction: column;
             cursor: pointer;
             gap: 5px;
-            z-index: 1001; /* 确保在导航链接之上 */
         }
 
         .hamburger div {
@@ -123,19 +103,6 @@
             height: 3px;
             background-color: #333;
             transition: all 0.3s;
-        }
-
-        /* 汉堡菜单动画 */
-        .hamburger.active div:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
-        }
-
-        .hamburger.active div:nth-child(2) {
-            opacity: 0;
-        }
-
-        .hamburger.active div:nth-child(3) {
-            transform: rotate(-45deg) translate(5px, -5px);
         }
 
         /* 主内容区样式 */
@@ -270,10 +237,12 @@
             overflow: hidden;
             border-top-left-radius: 15px;
             border-top-right-radius: 15px;
+            display: flex;
+            flex-direction: column;
         }
 
         #chat-messages {
-            height: calc(100% - 40px); /* 减去输入框的高度 */
+            flex: 1;
             overflow-y: auto;
             margin-bottom: 10px;
             /* 隐藏滚动条 */
@@ -376,20 +345,21 @@
         /* 响应式设计 */
         @media (min-width: 769px) {
             nav .nav-links {
-                display: flex !important;
+                display: flex;
+                max-height: none;
             }
 
             .hamburger {
-                display: none !important;
+                display: none;
             }
 
             .projects-container {
-                flex-direction: row !important;
+                flex-direction: row;
                 flex-wrap: wrap;
             }
 
             .card {
-                flex: 1 1 calc(50% - 20px) !important;
+                flex: 1 1 calc(50% - 20px);
             }
         }
 
@@ -398,32 +368,32 @@
                 display: none;
                 flex-direction: column;
                 width: 100%;
-                background-color: #eee8aa;
+                background-color: rgba(238, 232, 170, 0.95);
                 position: absolute;
-                top: 50px;
+                top: 60px;
                 left: 0;
                 box-shadow: 0 2px 5px rgba(0,0,0,0.1);
                 max-height: 0;
+                transition: max-height 0.3s ease-in-out;
                 overflow: hidden;
-                transition: max-height 0.3s ease-out;
             }
 
             nav .nav-links.active {
-                max-height: 500px; /* 足够显示所有菜单项 */
-                transition: max-height 0.5s ease-in;
+                display: flex;
+                max-height: 300px; /* 适当的最大高度以显示所有菜单项 */
             }
 
             .hamburger {
-                display: flex !important;
+                display: flex;
             }
 
             .projects-container {
-                flex-direction: column !important;
+                flex-direction: column;
                 gap: 15px;
             }
 
             .card {
-                flex: 1 1 100% !important;
+                flex: 1 1 100%;
             }
 
             header {
@@ -449,56 +419,15 @@
                 font-size: 20px;
             }
 
-            /* 隐藏返回顶部按钮 */
+            /* 移除移动端的返回顶部按钮 */
             #back-to-top-button {
-                display: none !important;
+                display: none;
             }
 
-            /* 优化聊天框在移动设备上的尺寸 */
+            /* 优化聊天框以避免页面上移 */
             #chat-container {
-                width: 100%;
-                height: 80%;
-                right: 0;
-                bottom: 0;
-                border-radius: 0;
+                height: 60%;
             }
-        }
-
-        /* 强制PC视图 */
-        .force-pc nav .nav-links {
-            display: flex !important;
-            max-height: none !important;
-        }
-
-        .force-pc .hamburger {
-            display: none !important;
-        }
-
-        .force-pc .projects-container {
-            flex-direction: row !important;
-            flex-wrap: wrap !important;
-        }
-
-        .force-pc .card {
-            flex: 1 1 calc(50% - 20px) !important;
-        }
-
-        /* 强制移动视图 */
-        .force-mobile nav .nav-links {
-            display: none !important;
-            max-height: 0 !important;
-        }
-
-        .force-mobile .hamburger {
-            display: flex !important;
-        }
-
-        .force-mobile .projects-container {
-            flex-direction: column !important;
-        }
-
-        .force-mobile .card {
-            flex: 1 1 100% !important;
         }
     </style>
 </head>
@@ -509,7 +438,7 @@
     </header>
 
     <nav aria-label="主导航">
-        <div class="hamburger" onclick="toggleNav()" aria-label="打开导航菜单">
+        <div class="hamburger" onclick="toggleNav()" aria-label="打开导航菜单" aria-expanded="false" role="button" tabindex="0">
             <div></div>
             <div></div>
             <div></div>
@@ -606,7 +535,6 @@
 
     <footer>
         &copy; 2024 Isla7940. 保留所有权利
-        | <span id="toggle-view" style="cursor: pointer; text-decoration: underline;">切换PC/移动</span>
     </footer>
 
     <script>
@@ -617,7 +545,7 @@
                 behavior: 'smooth'
             });
             // 关闭导航菜单（移动设备）
-            if (window.innerWidth <= 768 || document.body.classList.contains('force-mobile')) {
+            if (window.innerWidth <= 768) {
                 toggleNav(false);
             }
         }
@@ -709,12 +637,12 @@
 
         chatToggleButton.addEventListener('click', (event) => {
             event.stopPropagation();
-            chatContainer.style.display = chatContainer.style.display === 'block' ? 'none' : 'block';
+            chatContainer.style.display = chatContainer.style.display === 'flex' ? 'none' : 'flex';
         });
 
         // 点击聊天区域外收起聊天框
         document.addEventListener('click', (event) => {
-            if (chatContainer.style.display === 'block' && !chatContainer.contains(event.target) && event.target !== chatToggleButton) {
+            if (chatContainer.style.display === 'flex' && !chatContainer.contains(event.target) && event.target !== chatToggleButton) {
                 chatContainer.style.display = 'none';
             }
         });
@@ -838,17 +766,19 @@
         function toggleNav(forceState) {
             const navLinks = document.getElementById('nav-links');
             const hamburger = document.querySelector('.hamburger');
+            const isActive = navLinks.classList.contains('active');
+
             if (typeof forceState === 'boolean') {
-                if (forceState) {
+                if (forceState && !isActive) {
                     navLinks.classList.add('active');
-                    hamburger.classList.add('active');
-                } else {
+                    hamburger.setAttribute('aria-expanded', 'true');
+                } else if (!forceState && isActive) {
                     navLinks.classList.remove('active');
-                    hamburger.classList.remove('active');
+                    hamburger.setAttribute('aria-expanded', 'false');
                 }
             } else {
                 navLinks.classList.toggle('active');
-                hamburger.classList.toggle('active');
+                hamburger.setAttribute('aria-expanded', navLinks.classList.contains('active'));
             }
         }
 
@@ -856,32 +786,17 @@
         document.addEventListener('click', function(event) {
             const navLinks = document.getElementById('nav-links');
             const hamburger = document.querySelector('.hamburger');
-            if (window.innerWidth <= 768 || document.body.classList.contains('force-mobile')) {
-                if (navLinks.classList.contains('active') && !navLinks.contains(event.target) && !hamburger.contains(event.target)) {
-                    navLinks.classList.remove('active');
-                    hamburger.classList.remove('active');
-                }
+            if (window.innerWidth <= 768 && navLinks.classList.contains('active') && !navLinks.contains(event.target) && !hamburger.contains(event.target)) {
+                navLinks.classList.remove('active');
+                hamburger.setAttribute('aria-expanded', 'false');
             }
         });
 
-        // 切换PC/移动视图
-        const toggleView = document.getElementById('toggle-view');
-        let currentView = 'normal'; // normal, force-pc, force-mobile
-
-        toggleView.addEventListener('click', () => {
-            if (currentView === 'normal') {
-                document.body.classList.add('force-pc');
-                currentView = 'force-pc';
-                toggleView.textContent = '切换移动';
-            } else if (currentView === 'force-pc') {
-                document.body.classList.remove('force-pc');
-                document.body.classList.add('force-mobile');
-                currentView = 'force-mobile';
-                toggleView.textContent = '切换PC';
-            } else if (currentView === 'force-mobile') {
-                document.body.classList.remove('force-mobile');
-                currentView = 'normal';
-                toggleView.textContent = '切换PC';
+        // 防止在聊天输入框弹出时页面被推上
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 768 && chatContainer.style.display === 'flex') {
+                // 调整聊天框的位置或尺寸以适应键盘弹出
+                chatContainer.style.height = '50%';
             }
         });
     </script>
