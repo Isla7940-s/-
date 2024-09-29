@@ -23,21 +23,35 @@
 
         /* 头部样式 */
         header {
-            background-image: url('https://t.mwm.moe/pc'); /* 更换背景图片 */
-            background-size: cover;
-            background-position: center;
+            position: relative;
             color: #fff;
             text-align: center;
-            position: relative;
-            overflow: hidden;
             padding: 60px 10px; /* 减小内边距以适应小屏 */
+            background-image: url('https://t.mwm.moe/pc'); /* 设置背景图 */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* 添加模糊覆盖层 */
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4); /* 半透明黑色覆盖 */
+            backdrop-filter: blur(5px); /* 模糊效果 */
+            z-index: 1;
         }
 
         header h1 {
+            position: relative;
+            z-index: 2;
             margin: 0;
             font-size: 2em; /* 减小字体大小 */
             animation: slideIn 2s forwards;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5); /* 增加文本阴影以提高可读性 */
         }
 
         @keyframes slideIn {
@@ -47,8 +61,9 @@
 
         /* 导航栏样式 */
         nav {
-            background-color: rgba(238, 232, 170, 0.9); /* 半透明背景 */
-            padding: 10px 20px;
+            background-color: #eee8aa;
+            padding: 10px;
+            text-align: center;
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -56,7 +71,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: background-color 0.3s;
         }
 
         nav .nav-links {
@@ -96,6 +110,7 @@
             flex-direction: column;
             cursor: pointer;
             gap: 5px;
+            z-index: 1001;
         }
 
         .hamburger div {
@@ -103,6 +118,19 @@
             height: 3px;
             background-color: #333;
             transition: all 0.3s;
+        }
+
+        /* 活动状态下的汉堡菜单动画 */
+        .hamburger.active div:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active div:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active div:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
         }
 
         /* 主内容区样式 */
@@ -346,7 +374,6 @@
         @media (min-width: 769px) {
             nav .nav-links {
                 display: flex;
-                max-height: none;
             }
 
             .hamburger {
@@ -364,23 +391,26 @@
         }
 
         @media (max-width: 768px) {
+            /* 隐藏返回顶部按钮 */
+            #back-to-top-button {
+                display: none;
+            }
+
             nav .nav-links {
                 display: none;
                 flex-direction: column;
                 width: 100%;
-                background-color: rgba(238, 232, 170, 0.95);
+                background-color: #eee8aa;
                 position: absolute;
-                top: 60px;
+                top: 60px; /* 调整为导航栏高度 */
                 left: 0;
                 box-shadow: 0 2px 5px rgba(0,0,0,0.1);
                 max-height: 0;
-                transition: max-height 0.3s ease-in-out;
-                overflow: hidden;
             }
 
             nav .nav-links.active {
                 display: flex;
-                max-height: 300px; /* 适当的最大高度以显示所有菜单项 */
+                max-height: 500px; /* 足够容纳所有导航链接 */
             }
 
             .hamburger {
@@ -419,14 +449,14 @@
                 font-size: 20px;
             }
 
-            /* 移除移动端的返回顶部按钮 */
-            #back-to-top-button {
-                display: none;
+            /* 优化移动端菜单动画 */
+            .nav-links {
+                transition: max-height 0.5s ease-in-out;
             }
 
-            /* 优化聊天框以避免页面上移 */
+            /* 防止聊天框因键盘弹出而移动 */
             #chat-container {
-                height: 60%;
+                height: 50%; /* 减少高度以适应键盘 */
             }
         }
     </style>
@@ -438,7 +468,7 @@
     </header>
 
     <nav aria-label="主导航">
-        <div class="hamburger" onclick="toggleNav()" aria-label="打开导航菜单" aria-expanded="false" role="button" tabindex="0">
+        <div class="hamburger" onclick="toggleNav()" aria-label="打开导航菜单" aria-expanded="false">
             <div></div>
             <div></div>
             <div></div>
@@ -527,7 +557,7 @@
         <div id="chat-messages">
             <!-- 聊天消息将显示在这里 -->
         </div>
-        <input type="text" id="chat-input" placeholder="输入消息..." onkeydown="if(event.key === 'Enter') sendMessage()">
+        <input type="text" id="chat-input" placeholder="输入消息..." onkeydown="if(event.key === 'Enter') sendMessage()" autocomplete="off">
     </div>
 
     <!-- 返回顶部按钮 -->
@@ -766,19 +796,20 @@
         function toggleNav(forceState) {
             const navLinks = document.getElementById('nav-links');
             const hamburger = document.querySelector('.hamburger');
-            const isActive = navLinks.classList.contains('active');
-
             if (typeof forceState === 'boolean') {
-                if (forceState && !isActive) {
+                if (forceState) {
                     navLinks.classList.add('active');
+                    hamburger.classList.add('active');
                     hamburger.setAttribute('aria-expanded', 'true');
-                } else if (!forceState && isActive) {
+                } else {
                     navLinks.classList.remove('active');
+                    hamburger.classList.remove('active');
                     hamburger.setAttribute('aria-expanded', 'false');
                 }
             } else {
-                navLinks.classList.toggle('active');
-                hamburger.setAttribute('aria-expanded', navLinks.classList.contains('active'));
+                const isActive = navLinks.classList.toggle('active');
+                hamburger.classList.toggle('active');
+                hamburger.setAttribute('aria-expanded', isActive ? 'true' : 'false');
             }
         }
 
@@ -787,16 +818,16 @@
             const navLinks = document.getElementById('nav-links');
             const hamburger = document.querySelector('.hamburger');
             if (window.innerWidth <= 768 && navLinks.classList.contains('active') && !navLinks.contains(event.target) && !hamburger.contains(event.target)) {
-                navLinks.classList.remove('active');
-                hamburger.setAttribute('aria-expanded', 'false');
+                toggleNav(false);
             }
         });
 
-        // 防止在聊天输入框弹出时页面被推上
+        // 防止移动端点击输入框时页面上移
         window.addEventListener('resize', () => {
             if (window.innerWidth <= 768 && chatContainer.style.display === 'flex') {
-                // 调整聊天框的位置或尺寸以适应键盘弹出
                 chatContainer.style.height = '50%';
+            } else {
+                chatContainer.style.height = '60%';
             }
         });
     </script>
