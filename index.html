@@ -274,7 +274,7 @@
 
         /* 聊天框样式 */
         #chat-container {
-            display: none;
+            display: none; /* 默认隐藏 */
             position: fixed;
             bottom: 80px; /* 留出聊天按钮的空间 */
             right: 20px;
@@ -285,7 +285,7 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
             border-radius: 10px;
             z-index: 1002; /* 高于覆盖层 */
-            display: flex;
+            /* display: flex;  <-- 已移除 */
             flex-direction: column;
             overflow: hidden;
         }
