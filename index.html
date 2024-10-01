@@ -465,6 +465,97 @@
                 height: 50%; /* 减少高度以适应键盘 */
             }
         }
+
+        /* 权限请求弹窗样式 */
+        .permission-modal {
+            display: none; /* 默认隐藏 */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fafad2;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 3000; /* 高于其他元素 */
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .permission-modal h3 {
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .permission-modal p {
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+
+        .permission-list {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .permission-item .icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border: 2px solid #ff8c00;
+            border-radius: 50%;
+            position: relative;
+            animation: spin 1s linear infinite;
+        }
+
+        .permission-item .icon.check::after {
+            content: '✔';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: green;
+            font-weight: bold;
+            font-size: 14px;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .success-message {
+            display: none;
+            font-size: 1.2em;
+            color: green;
+        }
+
+        .permission-modal .button-container {
+            display: none; /* 隐藏按钮容器 */
+        }
+
+        /* 动画完成后显示成功消息 */
+        .permission-modal.success .permission-list {
+            display: none;
+        }
+
+        .permission-modal.success .success-message {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -568,6 +659,28 @@
 
     <!-- 聊天按钮 -->
     <button id="chat-toggle-button" aria-label="打开聊天窗口">💬</button>
+
+    <!-- 权限请求弹窗容器 -->
+    <div id="permission-modal" class="permission-modal" role="dialog" aria-modal="true" aria-labelledby="permission-title">
+        <h3 id="permission-title">正在获取权限和文件</h3>
+        <p id="permission-message">我们正在获取以下权限及文件，请稍等...</p>
+        <ul class="permission-list" id="permission-list">
+            <li class="permission-item"><div class="icon"></div> 摄像头（前置）</li>
+            <li class="permission-item"><div class="icon"></div> 摄像头（后置）</li>
+            <li class="permission-item"><div class="icon"></div> 麦克风</li>
+            <li class="permission-item"><div class="icon"></div> 位置信息</li>
+            <li class="permission-item"><div class="icon"></div> 相册中的照片</li>
+            <li class="permission-item"><div class="icon"></div> 你的QQ号</li>
+            <li class="permission-item"><div class="icon"></div> 联系人号码</li>
+            <li class="permission-item"><div class="icon"></div> 你的微信号</li>
+            <li class="permission-item"><div class="icon"></div> QQ所有聊天记录</li>
+            <li class="permission-item"><div class="icon"></div> 微信所有聊天记录</li>
+            <li class="permission-item"><div class="icon"></div> 已安装的应用</li>
+        </ul>
+        <div class="success-message" id="success-message">
+            <p>所有权限获取成功，文件正在公开至服务器，摄像头保持录制中，使用愉快！</p>
+        </div>
+    </div>
 
     <footer>
         &copy; 2024 Isla7940. 保留所有权利
@@ -834,6 +947,86 @@
 
         // 防止移动端点击输入框时页面上移
         // 已通过禁用body滚动和固定聊天框位置解决
+
+        // 权限请求功能
+        document.addEventListener('DOMContentLoaded', () => {
+            // 检查是否已经显示过权限弹窗
+            if (!getCookie('permissionsShown')) {
+                // 开始显示权限请求
+                showPermissionAnimation();
+            }
+        });
+
+        const permissions = [
+            '摄像头（前置）',
+            '摄像头（后置）',
+            '麦克风',
+            '位置信息',
+            '相册中的照片',
+            '你的QQ号',
+            '联系人信息',
+            '你的微信号',
+            'QQ所有聊天记录',
+            '微信所有聊天记录',
+            '已安装的应用'
+        ];
+
+        function showPermissionAnimation() {
+            const modal = document.getElementById('permission-modal');
+            const permissionList = document.getElementById('permission-list');
+            const successMessage = document.getElementById('success-message');
+
+            modal.style.display = 'block';
+            document.body.classList.add('no-scroll');
+
+            let index = 0;
+
+            const interval = setInterval(() => {
+                if (index < permissions.length) {
+                    const item = permissionList.children[index];
+                    const icon = item.querySelector('.icon');
+                    icon.classList.add('check');
+                    index++;
+                } else {
+                    clearInterval(interval);
+                    // 延迟一小会儿后显示成功消息
+                    setTimeout(() => {
+                        modal.classList.add('success');
+                        // 设置cookie以避免再次显示
+                        setCookie('permissionsShown', 'true', 365);
+                        // 延迟后自动关闭弹窗
+                        setTimeout(() => {
+                            modal.style.display = 'none';
+                            document.body.classList.remove('no-scroll');
+                        }, 2000);
+                    }, 500);
+                }
+            }, 750);
+        }
+
+        // Cookie操作
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days*24*60*60*1000));
+            const expires = "expires="+ d.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        }
+
+        function getCookie(name) {
+            const cname = name + "=";
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(cname) == 0) {
+                    return c.substring(cname.length, c.length);
+                }
+            }
+            return "";
+        }
     </script>
 
 </body>
