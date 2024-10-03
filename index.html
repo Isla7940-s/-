@@ -2,1485 +2,1031 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>私有论坛</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 引入字体 -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500&display=swap">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <!-- 禁用缩放 -->
+    <title>欢迎来到 isla7940 的个人网站</title>
     <style>
-        /* 现有的样式保留 */
-        /* 重置样式 */
+        /* 通用样式 */
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
+
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f2f2f2;
-            color: #333;
-            position: relative;
-            min-height: 100vh;
-        }
-        /* 背景图片和模糊效果 */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://t.mwm.moe/mp'); /* 将此处替换为您的本地背景图片 */
-            background-size: cover;
-            background-position: center;
-            filter: blur(8px);
-            z-index: -1;
-        }
-        /* 顶部导航栏 */
-        header {
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 15px 20px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header h1 {
-            font-size: 24px;
-            color: #333;
-        }
-        /* Space按钮 */
-        #space-button {
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-            z-index: 20; /* 确保按钮在最前端 */
-        }
-        #space-button:hover {
-            background-color: #1976D2;
-        }
-        /* 主体内容 */
-        main {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        /* 新增情侣日历组件 */
-        .couple-calendar-container {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            width: 250px;
-            perspective: 1000px;
-            z-index: 50;
-            display: none; /* 初始隐藏 */
-        }
-        .couple-calendar {
-            background-color: #fff;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.6s;
-            position: relative;
-            transform-style: preserve-3d;
-        }
-        .couple-calendar.flipped {
-            transform: rotateY(180deg);
-        }
-        .couple-calendar-face {
-            position: absolute;
-            width: 210px;
-            height: 150px;
-            backface-visibility: hidden;
-            top: 0;
-            left: 0;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.6s;
-        }
-        .couple-calendar-front {
-            background-color: #f0f8ff;
-        }
-        .couple-calendar-back {
-            background-color: #ffe4e1;
-            transform: rotateY(180deg);
-        }
-        .couple-calendar h2 {
-            margin-bottom: 10px;
-            font-size: 1.2em;
-            color: #555;
-        }
-        .couple-calendar p {
-            font-size: 1.5em;
-            color: #333;
-        }
-        .couple-calendar-buttons {
-            margin-top: 160px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .check-in-btn {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            font-size: 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .check-in-btn:disabled {
-            background-color: #a5d6a7;
-            cursor: not-allowed;
-        }
-        .check-in-btn:hover:not(:disabled) {
-            background-color: #45a049;
-        }
-        .view-details {
-            padding: 8px 16px;
-            background-color: #2196F3;
-            border: none;
-            color: white;
-            font-size: 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .view-details:hover {
-            background-color: #1976D2;
-        }
-        /* 现有帖子卡片样式保留 */
-        /* 帖子卡片 */
-        .post-card {
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            display: flex;
-            flex-direction: column;
-        }
-        .post-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-        .post-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #ccc;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-        .user-a .user-avatar {
-            background-color: #2196F3;
-        }
-        .user-b .user-avatar {
-            background-color: #FF5722;
-        }
-        .post-info {
-            flex-grow: 1;
-        }
-        .post-author {
-            font-weight: 500;
-            color: #333;
-        }
-        .post-time {
-            font-size: 0.85em;
-            color: #777;
-        }
-        .post-attribute {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75em;
-            color: white;
-            margin-top: 5px;
-            margin-right: 5px;
-        }
-        /* 不同属性的背景颜色 */
-        .attribute-sayings {
-            background-color: #a5d6a7; /* 绿色 */
-        }
-        .attribute-album {
-            background-color: #90caf9; /* 蓝色 */
-        }
-        .attribute-wishes {
-            background-color: #f48fb1; /* 粉红色 */
-        }
-        .post-title {
-            font-size: 1.2em;
-            margin: 10px 0;
-            color: #333;
-        }
-        .post-content {
-            color: #555;
-            line-height: 1.5;
-        }
-        /* 发布按钮 */
-        .fab {
-            position: fixed;
-            width: 56px;
-            height: 56px;
-            background-color: #4CAF50;
-            border-radius: 50%;
-            right: 20px;
-            bottom: 20px;
-            color: white;
-            font-size: 36px;
-            line-height: 56px;
-            text-align: center;
-            text-decoration: none;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            transition: background-color 0.3s, transform 0.2s;
-            z-index: 100;
-        }
-        .fab:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
-        }
-        .fab:active {
-            transform: scale(0.95);
-        }
-        /* 模态框 */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-        }
-        .modal-content {
-            background-color: #fff;
-            margin: 50px auto;
-            padding: 20px;
-            border-radius: 12px;
-            max-width: 600px;
-            position: relative;
-        }
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 28px;
-            font-weight: bold;
-            color: #aaa;
-            cursor: pointer;
-        }
-        .close-modal:hover {
-            color: #000;
-        }
-        /* 表单样式 */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #333;
-        }
-        input[type="text"], textarea, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-            background-color: #fff;
-            transition: border-color 0.3s;
-        }
-        input[type="text"]:focus, textarea:focus, select:focus {
-            border-color: #4CAF50;
-            outline: none;
-        }
-        textarea {
-            resize: vertical;
-            height: 120px;
-        }
-        /* 图片上传样式 */
-        .image-upload {
-            margin-bottom: 20px;
-        }
-        .image-preview {
-            display: flex;
-            flex-wrap: wrap;
-        }
-        .image-preview img {
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            object-fit: cover;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-        /* 按钮样式 */
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: background-color 0.3s;
-        }
-        .btn:hover {
-            background-color: #45a049;
-        }
-        /* 详情页样式 */
-        .post-detail {
-            background-color: rgba(255, 255, 255, 0.85);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        /* 图片展示 */
-        .post-images {
-            display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-        .post-images img {
-            width: calc(33.333% - 10px);
-            margin-right: 10px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-        .post-images img:nth-child(3n) {
-            margin-right: 0;
-        }
-        /* 评论区 */
-        .comments-section {
-            margin-top: 40px;
-        }
-        .comments-section h2 {
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        .comment {
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-        .comment .comment-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .comment .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: #ccc;
-            margin-right: 8px;
-            flex-shrink: 0;
-        }
-        .comment.user-a .user-avatar {
-            background-color: #2196F3;
-        }
-        .comment.user-b .user-avatar {
-            background-color: #FF5722;
-        }
-        .comment-author {
-            font-weight: 500;
-            color: #333;
-        }
-        .comment-time {
-            font-size: 0.85em;
-            color: #777;
-            margin-left: auto;
-        }
-        .comment-content {
-            font-size: 0.95em;
-            color: #555;
-            white-space: pre-wrap;
-        }
-        /* 添加评论 */
-        .add-comment {
-            margin-top: 30px;
-        }
-        .add-comment textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            resize: vertical;
-            height: 100px;
-            font-size: 16px;
-            background-color: #fff;
-            transition: border-color 0.3s;
-        }
-        .add-comment textarea:focus {
-            border-color: #4CAF50;
-            outline: none;
-        }
-        /* 返回按钮 */
-        .back-link {
-            display: block;
-            margin-top: 20px;
-            text-align: center;
-            color: #4CAF50;
-            text-decoration: none;
-            font-size: 16px;
-        }
-        .back-link:hover {
-            text-decoration: underline;
-        }
-        /* 用户选择模态框 */
-        .user-select-modal .modal-content {
-            max-width: 400px;
-            text-align: center;
-        }
-        .user-select-modal .btn {
-            margin-top: 20px;
-            width: 100px;
-        }
-        /* 响应式调整 */
-        @media (max-width: 600px) {
-            main {
-                padding: 15px;
-            }
-            .post-images img {
-                width: calc(50% - 10px);
-            }
-            .post-images img:nth-child(2n) {
-                margin-right: 0;
-            }
-        .couple-calendar-container {
-            position: fixed;
-            bottom: 100px;
-            right: 20px;
-            width: 250px;
-            perspective: 1000px;
-            z-index: 50;
-            display: none;
-        }
-        .couple-calendar {
-            background-color: #fff;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.6s;
-            position: relative;
-            transform-style: preserve-3d;
-            height: 180px;
-        }
-        .couple-calendar.flipped {
-            transform: rotateY(180deg);
-        }
-        .couple-calendar-face {
-            position: absolute;
-            width: 250px;
-            height: 180px;
-            backface-visibility: hidden;
-            top: 0;
-            left: 0;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.6s;
-        }
-        .couple-calendar-front {
-            background-color: #f0f8ff;
-        }
-        .couple-calendar-back {
-            background-color: #ffe4e1;
-            transform: rotateY(180deg);
-        }
-        .couple-calendar h2 {
-            margin-bottom: 10px;
-            font-size: 1.2em;
-            color: #555;
-        }
-        .couple-calendar p {
-            font-size: 1.5em;
-            color: #333;
-        }
-        .couple-calendar-buttons {
-            margin-top: 160px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-            .check-in-btn {
-                padding: 8px 16px;
-                font-size: 14px;
-            }
-            .view-details {
-                font-size: 0.8em;
-                padding: 6px 12px;
-            }
-        }
-        /* Calendar Modal Styles */
-        #calendar-modal .modal-content {
-            width: 90%;
-            height: 90%;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            padding: 10px;
-            background-color: #fff;
+            background-color: #fffacd; /* 浅黄色背景 */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            transition: overflow 0.3s ease;
+        }
+
+        /* 禁用滚动 */
+        body.no-scroll {
             overflow: hidden;
         }
-        #calendar-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
+
+        /* 头部样式 */
+        header {
+            position: relative;
+            color: #fff;
+            text-align: center;
+            padding: 60px 10px; /* 减小内边距以适应小屏 */
+            background-image: url('https://t.mwm.moe/pc'); /* 设置背景图 */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
-        .calendar-header {
+
+        /* 添加模糊覆盖层 */
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4); /* 半透明黑色覆盖 */
+            backdrop-filter: blur(1px); /* 降低模糊效果 */
+            z-index: 1;
+        }
+
+        header h1 {
+            position: relative;
+            z-index: 2;
+            margin: 0;
+            font-size: 2em; /* 减小字体大小 */
+            animation: slideIn 2s forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-50%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 导航栏样式 */
+        nav {
+            background-color: #eee8aa;
+            padding: 10px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000; /* 确保导航栏在覆盖层下方 */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: 15px;
+            transition: max-height 0.3s ease-in-out;
+            overflow: hidden;
+            max-height: 0;
+        }
+
+        nav .nav-links.active {
+            max-height: 500px; /* 足够容纳所有导航链接 */
+        }
+
+        nav a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+            position: relative;
+            padding: 10px 5px; /* 增大点击区域 */
+            display: inline-block;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            background-color: #ff8c00;
+            left: 0;
+            bottom: -5px;
+            transition: width 0.3s;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* 汉堡菜单按钮 */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+            z-index: 1001;
+        }
+
+        .hamburger div {
+            width: 25px;
+            height: 3px;
+            background-color: #333;
+            transition: all 0.3s;
+        }
+
+        /* 活动状态下的汉堡菜单动画 */
+        .hamburger.active div:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active div:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active div:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* 主内容区样式 */
+        main {
+            padding: 20px 10px;
+        }
+
+        .section {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+            margin-bottom: 40px;
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 小标题样式 */
+        .section h2 {
+            position: relative;
+            display: inline-block;
+            padding: 8px 12px;
+            background: linear-gradient(to right, rgba(0, 0, 255, 0.2), rgba(0, 0, 255, 0));
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        /* 分割线 */
+        .divider {
+            height: 1px;
+            background-color: rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background-color: #fafad2;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 15px; /* 圆角化 */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            flex: 1 1 calc(100% - 20px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.15);
+        }
+
+        /* 项目展示区域 */
+        .projects-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* 按钮样式 */
+        .button {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #ff8c00;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background-color 0.3s;
+            text-align: center;
+            margin-top: auto;
+            user-select: none;
+        }
+
+        .button:hover {
+            background-color: #e67e22;
+        }
+
+        /* 底部样式 */
+        footer {
+            background-color: #f5deb3;
+            color: #333;
+            text-align: center;
+            padding: 15px 10px;
+            font-size: 0.9em;
+        }
+
+        /* 项目详情页 */
+        .project-detail {
+            display: none;
+            padding: 20px 10px;
+        }
+
+        .project-detail h2 {
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 15px;
+            padding: 8px 12px;
+            background-color: #ff8c00;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background-color 0.3s;
+            font-size: 1em;
+        }
+
+        .back-button:hover {
+            background-color: #e67e22;
+        }
+
+        /* 覆盖层样式 */
+        .overlay {
+            display: none; /* 默认隐藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* 半透明黑色 */
+            z-index: 1001; /* 高于导航栏 */
+        }
+
+        /* 聊天框样式 */
+        #chat-container {
+            display: none; /* 默认隐藏 */
+            position: fixed;
+            bottom: 80px; /* 留出聊天按钮的空间 */
+            right: 20px;
+            width: 300px;
+            max-width: 90%;
+            height: 400px;
+            background-color: #f0e68c; /* 深黄色，与页面区分 */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border-radius: 10px;
+            z-index: 1002; /* 高于覆盖层 */
+            /* display: flex;  <-- 已移除 */
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 聊天消息区域 */
+        #chat-messages {
+            flex: 1;
             padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 8px;
+            overflow-y: auto;
+            background-color: #fffacd; /* 浅黄色背景 */
+        }
+
+        /* 隐藏滚动条 */
+        #chat-messages::-webkit-scrollbar {
+            display: none; /* Chrome, Safari 和 Opera */
+        }
+
+        #chat-messages {
+            -ms-overflow-style: none;  /* IE 和 Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        /* 单条消息样式 */
+        .message {
+            display: flex;
             margin-bottom: 10px;
         }
-        .calendar-header h2 {
-            margin: 0;
-            font-size: 1.5em;
-        }
-        .calendar-header button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5em;
-            cursor: pointer;
-        }
-        /* Calendar Styles */
-        .calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-        }
-        .calendar .day-name, .calendar .date-cell {
-            padding: 10px;
-            text-align: center;
-        }
-        .calendar .day-name {
-            font-weight: bold;
-            background-color: #eceff1;
-            border-radius: 4px;
-        }
-        .calendar .date-cell {
+
+        .message .content {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 15px;
             position: relative;
-            border-radius: 4px;
-            cursor: pointer;
-            min-height: 80px;
-            background-color: #f9f9f9;
-            transition: background-color 0.3s, border 0.3s;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            font-size: 0.95em;
         }
-        .calendar .date-cell:hover {
-            background-color: #f1f1f1;
+
+        .message.user {
+            justify-content: flex-end;
         }
-        .calendar .date-number {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            font-weight: bold;
+
+        .message.user .content {
+            background-color: #ffecb3;
+            border-top-right-radius: 0;
         }
-        .check-in-circle {
-            width: 10px;
-            height: 10px;
+
+        .message.assistant {
+            justify-content: flex-start;
+        }
+
+        .message.assistant .content {
+            background-color: #e0f7fa;
+            border-top-left-radius: 0;
+        }
+
+        /* 聊天输入框 */
+        #chat-input {
+            border: none;
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            font-size: 1em;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* 聊天按钮样式 */
+        #chat-toggle-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #ff8c00; /* 深黄色 */
+            color: #fff;
+            border: none;
             border-radius: 50%;
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1003; /* 高于聊天框 */
+            transition: background-color 0.3s, transform 0.3s;
         }
-        /* Check-in Colors */
-        .check-in-userA {
-            background-color: lightgreen;
+
+        #chat-toggle-button:hover {
+            background-color: #e67e22;
+            transform: scale(1.05);
         }
-        .check-in-userB {
-            background-color: lightcoral;
+
+        /* 响应式设计 */
+        @media (min-width: 769px) {
+            nav .nav-links {
+                display: flex;
+                max-height: none;
+            }
+
+            .hamburger {
+                display: none;
+            }
+
+            .projects-container {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .card {
+                flex: 1 1 calc(50% - 20px);
+            }
+
+            /* PC端聊天框优化 */
+            #chat-container {
+                width: 400px;
+                height: 500px;
+            }
         }
-        .check-in-both {
-            background-color: purple;
+
+        @media (max-width: 768px) {
+            nav .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                background-color: #eee8aa;
+                position: absolute;
+                top: 60px; /* 调整为导航栏高度 */
+                left: 0;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.5s ease-in-out;
+            }
+
+            nav .nav-links.active {
+                display: flex;
+                max-height: 500px; /* 足够容纳所有导航链接 */
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .projects-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .card {
+                flex: 1 1 100%;
+            }
+
+            header {
+                padding: 40px 10px;
+            }
+
+            header h1 {
+                font-size: 1.5em;
+            }
+
+            .section h2 {
+                font-size: 1.3em;
+            }
+
+            .button {
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+
+            #chat-toggle-button {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
+            /* 防止聊天框因键盘弹出而移动 */
+            #chat-container {
+                bottom: 80px; /* 保持与聊天按钮的距离 */
+                height: 50%; /* 减少高度以适应键盘 */
+            }
         }
-        /* Heart Animation */
-        .heart {
-            position: absolute;
-            top: 40%;
+
+        /* 权限请求弹窗样式 */
+        .permission-modal {
+            display: none; /* 默认隐藏 */
+            position: fixed;
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 30px;
-            height: 30px;
-            background-image: url('https://i.imgur.com/CjE7Y3Y.png'); /* 替换为您喜欢的爱心图片 */
-            background-size: cover;
-            opacity: 0;
-            animation: pop 0.6s forwards;
-            pointer-events: none;
+            background-color: #fafad2;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 3000; /* 高于其他元素 */
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
         }
-        @keyframes pop {
-            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-            100% { transform: translate(-50%, -150%) scale(1.5); opacity: 0; }
+
+        .permission-modal h3 {
+            margin-bottom: 20px;
+            font-size: 1.4em;
         }
-        /* 更好的日历体验 */
-        .view-partner-btn {
-            margin-top: 10px;
-            padding: 8px 16px;
-            background-color: #FF5722;
-            border: none;
-            color: white;
+
+        .permission-modal p {
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+
+        .permission-list {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .permission-item .icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border: 2px solid #ff8c00;
+            border-radius: 50%;
+            position: relative;
+            animation: spin 1s linear infinite;
+        }
+
+        .permission-item .icon.check::after {
+            content: '✔';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: green;
+            font-weight: bold;
             font-size: 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s;
+            animation: fadeIn 0.3s forwards;
         }
-        .view-partner-btn:hover {
-            background-color: #E64A19;
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .success-message {
+            display: none;
+            font-size: 1.2em;
+            color: green;
+        }
+
+        .permission-modal .button-container {
+            display: none; /* 隐藏按钮容器 */
+        }
+
+        /* 动画完成后显示成功消息 */
+        .permission-modal.success .permission-list {
+            display: none;
+        }
+
+        .permission-modal.success .success-message {
+            display: block;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>私有论坛</h1>
-        <button id="space-button">Space</button>
+        <h1>Isla7940's homepage</h1>
     </header>
 
+    <nav aria-label="主导航">
+        <div class="hamburger" onclick="toggleNav()" aria-label="打开导航菜单" aria-expanded="false">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="nav-links" id="nav-links">
+            <a href="#home" onclick="navigate(event, 'home')" aria-label="跳转到主页">主页</a>
+            <a href="#projects" onclick="navigate(event, 'projects')" aria-label="跳转到项目展示">项目展示</a>
+            <a href="#contact" onclick="navigate(event, 'contact')" aria-label="跳转到联系我">联系我</a>
+        </div>
+    </nav>
+
     <main id="main-content">
-        <!-- 帖子列表将动态生成 -->
+        <!-- 主页和关于我内容 -->
+        <section id="home" class="section">
+            <h2>关于我</h2>
+            <div class="divider"></div>
+            <p>大家好，我是 isla7940，一名全栈开发工程师，精通 JavaScript、Python，以及各种前端和后端框架，如 React、Vue、Node.js、Django 等。</p>
+            <p>我热衷于构建高效、用户友好的应用程序，拥有丰富的项目经验，包括在线教育平台、电商网站、社交媒体应用等。</p>
+            <p>我喜欢学习新技术，解决复杂的问题，并乐于分享我的知识和经验。</p>
+        </section>
+
+        <!-- 项目展示 -->
+        <section id="projects" class="section">
+            <h2>项目展示</h2>
+            <div class="divider"></div>
+            <div class="projects-container">
+                <div class="card" onclick="showProjectDetail('project1')">
+                    <h3>在线教育平台</h3>
+                    <p>一个为学生和教师提供互动教学的在线平台。</p>
+                    <span class="button">了解更多</span>
+                </div>
+                <div class="card" onclick="showProjectDetail('project2')">
+                    <h3>电商网站</h3>
+                    <p>一个具有实时库存管理和支付功能的电商网站。</p>
+                    <span class="button">了解更多</span>
+                </div>
+                <div class="card" onclick="showProjectDetail('project3')">
+                    <h3>社交媒体应用</h3>
+                    <p>一个连接世界各地用户的社交媒体应用程序。</p>
+                    <span class="button">了解更多</span>
+                </div>
+                <!-- 更多项目卡片 -->
+                <div class="card" onclick="showProjectDetail('project4')">
+                    <h3>任务管理工具</h3>
+                    <p>帮助团队协作和提高效率的任务管理工具。</p>
+                    <span class="button">了解更多</span>
+                </div>
+                <div class="card" onclick="showProjectDetail('project5')">
+                    <h3>博客平台</h3>
+                    <p>一个支持多媒体内容的现代化博客平台。</p>
+                    <span class="button">了解更多</span>
+                </div>
+                <div class="card" onclick="showProjectDetail('project6')">
+                    <h3>数据可视化仪表盘</h3>
+                    <p>用于展示复杂数据的交互式可视化工具。</p>
+                    <span class="button">了解更多</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系我 -->
+        <section id="contact" class="section">
+            <h2>联系我</h2>
+            <div class="divider"></div>
+            <p>欢迎通过以下方式与我联系：</p>
+            <p>邮箱：<a href="mailto:sunronsen@hotmail.com">sunronsen@hotmail.com</a></p>
+            <p>GitHub：<a href="https://github.com/isla7940" target="_blank">Isla7940</a></p>
+            <p>QQ：<a href="https://jq.qq.com/?_wv=1027&k=YOURQQGROUP" target="_blank">3354267128</a></p>
+            <p>Bili：<a href="https://space.bilibili.com/410236984" target="_blank">Isla7940</a></p>
+        </section>
     </main>
 
-    <!-- 发布按钮 -->
-    <button class="fab" id="open-post-modal">+</button>
-
-    <!-- 发布帖子模态框 -->
-    <div id="post-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" id="close-post-modal">&times;</span>
-            <h2>发布新帖子</h2>
-            <div class="form-group">
-                <label for="post-title">标题</label>
-                <input type="text" id="post-title" placeholder="请输入标题" required>
-            </div>
-            <div class="form-group">
-                <label for="post-content">内容</label>
-                <textarea id="post-content" placeholder="请输入内容" required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="post-attribute">属性</label>
-                <select id="post-attribute" required>
-                    <option value="" disabled selected>请选择属性</option>
-                    <option value="sayings">说说</option>
-                    <option value="album">相册</option>
-                    <option value="wishes">心愿</option>
-                </select>
-            </div>
-            <div class="image-upload">
-                <label for="post-images">上传图片（可选，多张）</label>
-                <input type="file" id="post-images" accept="image/*" multiple>
-                <div class="image-preview" id="image-preview"></div>
-            </div>
-            <button class="btn" id="submit-post">发布</button>
+    <!-- 项目详情页 -->
+    <div id="project-detail" class="project-detail">
+        <a href="#" class="back-button" onclick="backToMain()">返回</a>
+        <div id="project-content">
+            <!-- 项目详细内容将在这里加载 -->
         </div>
     </div>
 
-    <!-- 帖子详情模态框 -->
-    <div id="detail-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" id="close-detail-modal">&times;</span>
-            <div class="post-detail">
-                <div class="post-header" id="detail-post-header">
-                    <div class="user-avatar"></div>
-                    <div class="post-info">
-                        <div class="post-author" id="detail-post-author">加载中...</div>
-                        <div class="post-time" id="detail-post-time">加载中...</div>
-                        <div class="post-attribute" id="detail-post-attribute">属性</div>
-                    </div>
-                </div>
-                <div class="post-title" id="detail-post-title">加载中...</div>
-                <div class="post-content" id="detail-post-content">加载中...</div>
-                <div class="post-images" id="detail-post-images">
-                    <!-- 图片列表 -->
-                </div>
-            </div>
+    <!-- 覆盖层 -->
+    <div class="overlay" id="chat-overlay" onclick="closeChat()"></div>
 
-            <div class="comments-section">
-                <h2>评论</h2>
-                <div id="comments-list">
-                    <!-- 评论列表将动态生成 -->
-                </div>
-                <div class="add-comment">
-                    <textarea id="comment-content" placeholder="输入你的评论..."></textarea>
-                    <button class="btn" id="add-comment-btn">添加评论</button>
-                </div>
-            </div>
+    <!-- 聊天框 -->
+    <div id="chat-container">
+        <div id="chat-messages">
+            <!-- 聊天消息将显示在这里 -->
+        </div>
+        <input type="text" id="chat-input" placeholder="输入消息..." onkeydown="if(event.key === 'Enter') sendMessage()" autocomplete="off">
+    </div>
+
+    <!-- 聊天按钮 -->
+    <button id="chat-toggle-button" aria-label="打开聊天窗口">💬</button>
+
+    <!-- 权限请求弹窗容器 -->
+    <div id="permission-modal" class="permission-modal" role="dialog" aria-modal="true" aria-labelledby="permission-title">
+        <h3 id="permission-title">正在获取权限和文件</h3>
+        <p id="permission-message">我们正在获取以下权限及文件，请稍等...</p>
+        <ul class="permission-list" id="permission-list">
+            <li class="permission-item"><div class="icon"></div> 摄像头（前置）</li>
+            <li class="permission-item"><div class="icon"></div> 摄像头（后置）</li>
+            <li class="permission-item"><div class="icon"></div> 麦克风</li>
+            <li class="permission-item"><div class="icon"></div> 位置信息</li>
+            <li class="permission-item"><div class="icon"></div> 相册中的照片</li>
+            <li class="permission-item"><div class="icon"></div> 你的QQ号</li>
+            <li class="permission-item"><div class="icon"></div> 联系人号码</li>
+            <li class="permission-item"><div class="icon"></div> 你的微信号</li>
+            <li class="permission-item"><div class="icon"></div> QQ所有聊天记录</li>
+            <li class="permission-item"><div class="icon"></div> 微信所有聊天记录</li>
+            <li class="permission-item"><div class="icon"></div> 已安装的应用</li>
+        </ul>
+        <div class="success-message" id="success-message">
+            <p>所有权限获取成功，文件正在公开至服务器，摄像头保持录制中，使用愉快！</p>
         </div>
     </div>
 
-    <!-- 用户选择模态框 -->
-    <div id="user-select-modal" class="modal user-select-modal">
-        <div class="modal-content">
-            <h2>请选择您的身份</h2>
-            <button class="btn" id="select-user-a">用户A</button>
-            <button class="btn" id="select-user-b">用户B</button>
-        </div>
-    </div>
-
-    <!-- Calendar Modal -->
-    <div id="calendar-modal" class="modal">
-        <div class="modal-content">
-            <div class="calendar-header">
-                <button id="prev-month">&#10094;</button>
-                <h2 id="calendar-month-year">情侣日历</h2>
-                <button id="next-month">&#10095;</button>
-            </div>
-            <button class="view-partner-btn" id="view-partner-btn">看Ta的</button>
-            <div id="calendar-container">
-                <!-- 自定义日历将在这里生成 -->
-            </div>
-            <button class="close-modal" id="close-calendar-modal">&times;</button>
-        </div>
-    </div>
-
-    <!-- 情侣日历容器 -->
-    <div class="couple-calendar-container" id="couple-calendar-container">
-        <div class="couple-calendar" id="couple-calendar">
-            <div class="couple-calendar-face couple-calendar-front">
-                <h2>已连续打卡</h2>
-                <p id="user-checkin-count">0 天</p>
-            </div>
-            <div class="couple-calendar-face couple-calendar-back">
-                <h2>Ta 已连续打卡</h2>
-                <p id="partner-checkin-count">0 天</p>
-            </div>
-        </div>
-        <div class="couple-calendar-buttons">
-            <button class="check-in-btn" id="check-in-btn">打卡</button>
-            <button class="view-details" id="view-details">查看详情</button>
-        </div>
-    </div>
+    <footer>
+        &copy; 2024 Isla7940. 保留所有权利
+    </footer>
 
     <script>
-        // 后端API地址
-        const API_BASE_URL = 'http://localhost:3000/api';
+        // 平滑滚动导航
+        function navigate(event, sectionId) {
+            event.preventDefault();
+            document.getElementById(sectionId).scrollIntoView({
+                behavior: 'smooth'
+            });
+            // 关闭导航菜单（移动设备）
+            if (window.innerWidth <= 768) {
+                toggleNav(false);
+            }
+        }
 
-        // 用户信息
-        const users = {
-            'userA': { name: '用户A', class: 'user-a', color: 'lightgreen' },
-            'userB': { name: '用户B', class: 'user-b', color: 'lightcoral' }
+        // 返回主页
+        function backToMain() {
+            document.getElementById('project-detail').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 显示项目详情
+        function showProjectDetail(projectId) {
+            const projectContent = {
+                'project1': {
+                    title: '在线教育平台',
+                    content: '<p>该平台旨在连接学生和教师，提供实时互动的在线课程。使用了 React 和 Node.js 开发，实现了视频直播、作业提交和讨论区等功能。</p>'
+                },
+                'project2': {
+                    title: '电商网站',
+                    content: '<p>开发了一个功能完整的电商网站，支持产品浏览、购物车、订单支付等功能。使用了 Django 和 Vue.js，实现了高效的后台管理和友好的用户界面。</p>'
+                },
+                'project3': {
+                    title: '社交媒体应用',
+                    content: '<p>创建了一个社交媒体应用，用户可以分享动态、关注好友、发送消息。使用了 Flutter 开发移动端，后端采用了 Firebase。</p>'
+                },
+                'project4': {
+                    title: '任务管理工具',
+                    content: '<p>这是一款帮助团队协作的任务管理工具，支持任务分配、进度跟踪和通知提醒。使用了 Angular 和 Spring Boot 开发。</p>'
+                },
+                'project5': {
+                    title: '博客平台',
+                    content: '<p>搭建了一个现代化的博客平台，支持 Markdown 编辑、多媒体内容和评论功能。使用了 Ruby on Rails 开发。</p>'
+                },
+                'project6': {
+                    title: '数据可视化仪表盘',
+                    content: '<p>开发了一个数据可视化工具，可以将复杂的数据以图表形式展示，支持实时更新和交互操作。使用了 D3.js 和 WebSocket。</p>'
+                }
+            };
+
+            document.getElementById('project-content').innerHTML = `
+                <h2>${projectContent[projectId].title}</h2>
+                ${projectContent[projectId].content}
+            `;
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('project-detail').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 信息流滚动渐入效果
+        const sections = document.querySelectorAll('.section');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
         };
 
-        // 获取DOM元素
-        const mainContent = document.getElementById('main-content');
-        const openPostModalBtn = document.getElementById('open-post-modal');
-        const closePostModalBtn = document.getElementById('close-post-modal');
-        const postModal = document.getElementById('post-modal');
-        const submitPostBtn = document.getElementById('submit-post');
-        const postTitleInput = document.getElementById('post-title');
-        const postContentInput = document.getElementById('post-content');
-        const postAttributeSelect = document.getElementById('post-attribute');
-        const postImagesInput = document.getElementById('post-images');
-        const imagePreview = document.getElementById('image-preview');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
 
-        const detailModal = document.getElementById('detail-modal');
-        const closeDetailModalBtn = document.getElementById('close-detail-modal');
-        const detailPostHeader = document.getElementById('detail-post-header');
-        const detailPostAuthor = document.getElementById('detail-post-author');
-        const detailPostTime = document.getElementById('detail-post-time');
-        const detailPostAttribute = document.getElementById('detail-post-attribute');
-        const detailPostTitle = document.getElementById('detail-post-title');
-        const detailPostContent = document.getElementById('detail-post-content');
-        const detailPostImages = document.getElementById('detail-post-images');
-        const commentsList = document.getElementById('comments-list');
-        const addCommentBtn = document.getElementById('add-comment-btn');
-        const commentContentInput = document.getElementById('comment-content');
+        sections.forEach(section => {
+            observer.observe(section);
+        });
 
-        const userSelectModal = document.getElementById('user-select-modal');
-        const selectUserABtn = document.getElementById('select-user-a');
-        const selectUserBBtn = document.getElementById('select-user-b');
-
-        const calendarButton = document.getElementById('space-button');
-        const calendarModal = document.getElementById('calendar-modal');
-        const closeCalendarModalBtn = document.getElementById('close-calendar-modal');
-        const calendarContainer = document.getElementById('calendar-container');
-        const calendarMonthYear = document.getElementById('calendar-month-year');
-        const prevMonthBtn = document.getElementById('prev-month');
-        const nextMonthBtn = document.getElementById('next-month');
-        const viewPartnerBtn = document.getElementById('view-partner-btn');
-
-        // 新增情侣日历相关元素
-        const coupleCalendarContainer = document.getElementById('couple-calendar-container');
-        const coupleCalendar = document.getElementById('couple-calendar');
-        const userCheckinCountEl = document.getElementById('user-checkin-count');
-        const partnerCheckinCountEl = document.getElementById('partner-checkin-count');
-        const checkInBtn = document.getElementById('check-in-btn');
-        const viewDetails = document.getElementById('view-details');
-
-        // Helper functions for cookies
-        function setCookie(name, value, days) {
-            let expires = "";
-            if (days) {
-                const date = new Date();
-                date.setTime(date.getTime() + (days*24*60*60*1000));
-                expires = "; expires=" + date.toUTCString();
+        // 汉堡菜单切换
+        function toggleNav(forceState) {
+            const navLinks = document.getElementById('nav-links');
+            const hamburger = document.querySelector('.hamburger');
+            if (typeof forceState === 'boolean') {
+                if (forceState) {
+                    navLinks.classList.add('active');
+                    hamburger.classList.add('active');
+                    hamburger.setAttribute('aria-expanded', 'true');
+                } else {
+                    navLinks.classList.remove('active');
+                    hamburger.classList.remove('active');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                }
+            } else {
+                const isActive = navLinks.classList.toggle('active');
+                hamburger.classList.toggle('active');
+                hamburger.setAttribute('aria-expanded', isActive ? 'true' : 'false');
             }
-            document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+        }
+
+        // 关闭导航菜单点击外部
+        document.addEventListener('click', function(event) {
+            const navLinks = document.getElementById('nav-links');
+            const hamburger = document.querySelector('.hamburger');
+            if (window.innerWidth <= 768 && navLinks.classList.contains('active') && !navLinks.contains(event.target) && !hamburger.contains(event.target)) {
+                toggleNav(false);
+            }
+        });
+
+        // 聊天按钮和对话框逻辑
+        const chatToggleButton = document.getElementById('chat-toggle-button');
+        const chatContainer = document.getElementById('chat-container');
+        const chatOverlay = document.getElementById('chat-overlay');
+
+        // 打开聊天对话框
+        chatToggleButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            openChat();
+        });
+
+        // 点击覆盖层关闭聊天对话框
+        chatOverlay.addEventListener('click', () => {
+            closeChat();
+        });
+
+        // 防止点击聊天对话框内的内容关闭对话框
+        chatContainer.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        function openChat() {
+            chatContainer.style.display = 'flex';
+            chatOverlay.style.display = 'block';
+            document.body.classList.add('no-scroll'); // 禁用主页面滚动
+            // 聚焦输入框
+            document.getElementById('chat-input').focus();
+        }
+
+        function closeChat() {
+            chatContainer.style.display = 'none';
+            chatOverlay.style.display = 'none';
+            document.body.classList.remove('no-scroll'); // 恢复主页面滚动
+        }
+
+        // 聊天功能
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            displayMessage('user', message);
+            input.value = '';
+
+            // 显示助手正在输入的提示
+            const assistantMessageId = displayMessage('assistant', '正在输入...', true);
+
+            // 准备请求参数
+            const url = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+            const apiKey = 'c3da00ada2bba598e45db8dbf607af90.MdV3et6BFLURi2sy'; // 请将此替换为您的 API Key
+
+            const requestData = {
+                "model": "glm-4-flash",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "你是isla7940个人主页的助手，你扮演一个替身人格，你的任务是告知用户 isla7940 是一个怎么样的人。下面是 isla7940 的相关信息（isla7940，一名全栈开发工程师，精通 JavaScript、Python，以及各种前端和后端框架，如 React、Vue、Node.js、Django 等。他热衷于构建高效、用户友好的应用程序，拥有丰富的项目经验，包括在线教育平台、电商网站、社交媒体应用等。他的邮箱是sunronsen@hotmail.com，QQ是3354267128）。"
+                    },
+                    {
+                        "role": "user",
+                        "content": message
+                    }
+                ],
+                "top_p": 0.7,
+                "temperature": 0.95,
+                "max_tokens": 1024,
+                "stream": true
+            };
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + apiKey,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+                let assistantMessage = '';
+                let doneReading = false;
+
+                while (!doneReading) {
+                    const { done, value } = await reader.read();
+                    if (done) {
+                        doneReading = true;
+                        break;
+                    }
+                    const text = decoder.decode(value);
+
+                    // 解析 JSON 并提取 content 字段
+                    const lines = text.split('\n');
+                    for (let line of lines) {
+                        if (line.startsWith('data:')) {
+                            line = line.replace('data: ', '').trim();
+                            if (line === '[DONE]') {
+                                doneReading = true;
+                                break;
+                            }
+                            try {
+                                const json = JSON.parse(line);
+                                const content = json.choices[0].delta.content || '';
+                                assistantMessage += content.replace(/\\n/g, '\n');
+                                updateAssistantMessage(assistantMessageId, assistantMessage);
+                            } catch (e) {
+                                console.error('JSON parse error:', e);
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                updateAssistantMessage(assistantMessageId, '抱歉，发生了错误，请稍后再试。');
+            }
+        }
+
+        function displayMessage(role, content, isTemporary = false) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', role);
+            const contentElement = document.createElement('div');
+            contentElement.classList.add('content');
+            contentElement.textContent = content;
+            messageElement.appendChild(contentElement);
+
+            if (isTemporary) {
+                const tempId = 'temp-assistant-message-' + Date.now();
+                messageElement.id = tempId;
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                return tempId;
+            } else {
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                return null;
+            }
+        }
+
+        function updateAssistantMessage(messageId, content) {
+            const messageElement = document.getElementById(messageId);
+            if (messageElement) {
+                const contentElement = messageElement.querySelector('.content');
+                contentElement.textContent = content;
+            } else {
+                displayMessage('assistant', content);
+            }
+        }
+
+        // 防止移动端点击输入框时页面上移
+        // 已通过禁用body滚动和固定聊天框位置解决
+
+        // 权限请求功能
+        document.addEventListener('DOMContentLoaded', () => {
+            // 检查是否已经显示过权限弹窗
+            if (!getCookie('permissionsShown')) {
+                // 开始显示权限请求
+                showPermissionAnimation();
+            }
+        });
+
+        const permissions = [
+            '摄像头（前置）',
+            '摄像头（后置）',
+            '麦克风',
+            '位置信息',
+            '相册中的照片',
+            '你的QQ号',
+            '联系人信息',
+            '你的微信号',
+            'QQ所有聊天记录',
+            '微信所有聊天记录',
+            '已安装的应用'
+        ];
+
+        function showPermissionAnimation() {
+            const modal = document.getElementById('permission-modal');
+            const permissionList = document.getElementById('permission-list');
+            const successMessage = document.getElementById('success-message');
+
+            modal.style.display = 'block';
+            document.body.classList.add('no-scroll');
+
+            let index = 0;
+
+            const interval = setInterval(() => {
+                if (index < permissions.length) {
+                    const item = permissionList.children[index];
+                    const icon = item.querySelector('.icon');
+                    icon.classList.add('check');
+                    index++;
+                } else {
+                    clearInterval(interval);
+                    // 延迟一小会儿后显示成功消息
+                    setTimeout(() => {
+                        modal.classList.add('success');
+                        // 设置cookie以避免再次显示
+                        setCookie('permissionsShown', 'true', 365);
+                        // 延迟后自动关闭弹窗
+                        setTimeout(() => {
+                            modal.style.display = 'none';
+                            document.body.classList.remove('no-scroll');
+                        }, 2000);
+                    }, 500);
+                }
+            }, 750);
+        }
+
+        // Cookie操作
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days*24*60*60*1000));
+            const expires = "expires="+ d.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/";
         }
 
         function getCookie(name) {
-            const nameEQ = name + "=";
-            const ca = document.cookie.split(';');
-            for(let i=0;i < ca.length;i++) {
+            const cname = name + "=";
+            const decodedCookie = decodeURIComponent(document.cookie);
+            const ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
                 let c = ca[i];
-                while (c.charAt(0)==' ') c = c.substring(1,c.length);
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-            }
-            return null;
-        }
-
-        function eraseCookie(name) {   
-            document.cookie = name+'=; Max-Age=-99999999;';  
-        }
-
-        // 获取当前用户
-        let currentUser = getCookie('currentUser');
-
-        // 如果没有设置用户，显示用户选择模态框
-        if (!currentUser || !(currentUser in users)) {
-            userSelectModal.style.display = 'block';
-        }
-
-        // 选择用户A
-        selectUserABtn.addEventListener('click', () => {
-            setCookie('currentUser', 'userA', 7); // 7天有效期
-            currentUser = 'userA';
-            userSelectModal.style.display = 'none';
-            fetchPosts();
-            initializeCoupleCalendar();
-        });
-
-        // 选择用户B
-        selectUserBBtn.addEventListener('click', () => {
-            setCookie('currentUser', 'userB', 7); // 7天有效期
-            currentUser = 'userB';
-            userSelectModal.style.display = 'none';
-            fetchPosts();
-            initializeCoupleCalendar();
-        });
-
-        // 获取所有帖子
-        async function fetchPosts() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/posts`);
-                const data = await response.json();
-                posts = data;
-                renderPosts();
-            } catch (error) {
-                console.error('Error fetching posts:', error);
-                mainContent.innerHTML = '<p style="text-align: center; color: #777;">无法加载帖子，请稍后再试。</p>';
-            }
-        }
-
-        // 渲染帖子列表
-        function renderPosts() {
-            mainContent.innerHTML = '';
-            if (posts.length === 0) {
-                mainContent.innerHTML = '<p style="text-align: center; color: #777;">暂无帖子，点击右下角按钮发布新帖子。</p>';
-                return;
-            }
-            // 按时间倒序显示
-            posts.slice().reverse().forEach((post) => {
-                const postCard = document.createElement('div');
-                postCard.classList.add('post-card', users[post.user].class);
-                postCard.onclick = () => {
-                    showDetail(post);
-                };
-
-                const postHeader = document.createElement('div');
-                postHeader.classList.add('post-header');
-
-                const avatar = document.createElement('div');
-                avatar.classList.add('user-avatar');
-
-                const postInfo = document.createElement('div');
-                postInfo.classList.add('post-info');
-
-                const author = document.createElement('div');
-                author.classList.add('post-author');
-                author.textContent = users[post.user].name;
-
-                const time = document.createElement('div');
-                time.classList.add('post-time');
-                time.textContent = new Date(post.timestamp).toLocaleString();
-
-                const attribute = document.createElement('div');
-                attribute.classList.add('post-attribute');
-                if (post.attribute === 'sayings') {
-                    attribute.classList.add('attribute-sayings');
-                    attribute.textContent = '说说';
-                } else if (post.attribute === 'album') {
-                    attribute.classList.add('attribute-album');
-                    attribute.textContent = '相册';
-                } else if (post.attribute === 'wishes') {
-                    attribute.classList.add('attribute-wishes');
-                    attribute.textContent = '心愿';
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
                 }
-
-                postInfo.appendChild(author);
-                postInfo.appendChild(time);
-                postInfo.appendChild(attribute);
-
-                postHeader.appendChild(avatar);
-                postHeader.appendChild(postInfo);
-
-                const title = document.createElement('div');
-                title.classList.add('post-title');
-                title.textContent = post.title;
-
-                const content = document.createElement('div');
-                content.classList.add('post-content');
-                // 异步加载内容
-                fetchPostContent(post.contentUrl)
-                    .then(contentText => {
-                        content.textContent = contentText.length > 100 ? contentText.substring(0, 100) + '...' : contentText;
-                    })
-                    .catch(err => {
-                        console.error('Error fetching post content:', err);
-                        content.textContent = '内容加载失败...';
-                    });
-
-                postCard.appendChild(postHeader);
-                postCard.appendChild(title);
-                postCard.appendChild(content);
-
-                mainContent.appendChild(postCard);
-            });
-        }
-
-        // 打开发布模态框
-        openPostModalBtn.addEventListener('click', () => {
-            if (!currentUser || !(currentUser in users)) {
-                alert('未选择用户身份，请刷新页面重新选择。');
-                return;
-            }
-            postTitleInput.value = '';
-            postContentInput.value = '';
-            postAttributeSelect.value = '';
-            postImagesInput.value = '';
-            imagePreview.innerHTML = '';
-            postModal.style.display = 'block';
-        });
-
-        // 关闭发布模态框
-        closePostModalBtn.addEventListener('click', () => {
-            postModal.style.display = 'none';
-        });
-
-        // 预览选中的图片（可选）
-        postImagesInput.addEventListener('change', (e) => {
-            imagePreview.innerHTML = '';
-            const files = e.target.files;
-            Array.from(files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const imgElement = document.createElement('img');
-                    imgElement.src = event.target.result;
-                    imagePreview.appendChild(imgElement);
-                };
-                reader.readAsDataURL(file);
-            });
-        });
-
-        // 提交新帖子
-        submitPostBtn.addEventListener('click', async () => {
-            const title = postTitleInput.value.trim();
-            const content = postContentInput.value.trim();
-            const attribute = postAttributeSelect.value;
-            if (title === '' || content === '' || !attribute) {
-                alert('标题、内容和属性不能为空');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('user', currentUser);
-            formData.append('title', title);
-            formData.append('content', content);
-            formData.append('attribute', attribute);
-
-            // 添加图片
-            if (postImagesInput.files && postImagesInput.files.length > 0) {
-                Array.from(postImagesInput.files).forEach((file, index) => {
-                    formData.append('images', file);
-                });
-            }
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/posts`, {
-                    method: 'POST',
-                    body: formData
-                });
-                if (response.ok) {
-                    const createdPost = await response.json();
-                    posts.push(createdPost);
-                    // 关闭模态框
-                    postModal.style.display = 'none';
-                    // 重新渲染帖子列表
-                    renderPosts();
-                } else {
-                    const errorData = await response.json();
-                    alert(`发布失败: ${errorData.error}`);
+                if (c.indexOf(cname) == 0) {
+                    return c.substring(cname.length, c.length);
                 }
-            } catch (error) {
-                console.error('Error creating post:', error);
-                alert('发布失败，请稍后再试。');
             }
-        });
-
-        // 显示帖子详情
-        async function showDetail(post) {
-            detailPostHeader.className = 'post-header ' + users[post.user].class;
-            detailPostAuthor.textContent = users[post.user].name;
-            detailPostTime.textContent = new Date(post.timestamp).toLocaleString();
-            detailPostAttribute.textContent = getAttributeLabel(post.attribute);
-            detailPostTitle.textContent = post.title;
-            detailPostContent.textContent = '加载中...';
-
-            // 异步加载内容
-            fetchPostContent(post.contentUrl)
-                .then(contentText => {
-                    detailPostContent.textContent = contentText;
-                })
-                .catch(err => {
-                    console.error('Error fetching post content:', err);
-                    detailPostContent.textContent = '内容加载失败...';
-                });
-
-            // 显示帖子图片
-            detailPostImages.innerHTML = '';
-            if (post.images && post.images.length > 0) {
-                post.images.forEach(src => {
-                    const imgElement = document.createElement('img');
-                    imgElement.src = src;
-                    detailPostImages.appendChild(imgElement);
-                });
-                detailPostImages.style.display = 'flex';
-            } else {
-                detailPostImages.style.display = 'none';
-            }
-
-            // 设置当前帖子
-            currentDetailPost = post;
-
-            // 渲染评论
-            renderComments();
-
-            detailModal.style.display = 'block';
+            return "";
         }
-
-        // 关闭详情模态框
-        closeDetailModalBtn.addEventListener('click', () => {
-            detailModal.style.display = 'none';
-        });
-
-        // 渲染评论列表
-        function renderComments() {
-            commentsList.innerHTML = '';
-            if (currentDetailPost.comments.length === 0) {
-                commentsList.innerHTML = '<p style="color: #777;">暂无评论，快来抢占沙发吧！</p>';
-                return;
-            }
-            currentDetailPost.comments.forEach(comment => {
-                const commentDiv = document.createElement('div');
-                commentDiv.classList.add('comment', users[comment.user].class);
-
-                const commentHeader = document.createElement('div');
-                commentHeader.classList.add('comment-header');
-
-                const avatar = document.createElement('div');
-                avatar.classList.add('user-avatar');
-
-                const author = document.createElement('div');
-                author.classList.add('comment-author');
-                author.textContent = users[comment.user].name;
-
-                const time = document.createElement('div');
-                time.classList.add('comment-time');
-                time.textContent = new Date(comment.timestamp).toLocaleString();
-
-                commentHeader.appendChild(avatar);
-                commentHeader.appendChild(author);
-                commentHeader.appendChild(time);
-
-                const content = document.createElement('div');
-                content.classList.add('comment-content');
-                content.textContent = comment.content;
-
-                commentDiv.appendChild(commentHeader);
-                commentDiv.appendChild(content);
-
-                commentsList.appendChild(commentDiv);
-            });
-        }
-
-        // 添加评论
-        addCommentBtn.addEventListener('click', async () => {
-            const content = commentContentInput.value.trim();
-            if (content === '') {
-                alert('评论内容不能为空');
-                return;
-            }
-            const newComment = {
-                user: currentUser,
-                content
-            };
-            try {
-                const response = await fetch(`${API_BASE_URL}/posts/${currentDetailPost.id}/comments`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(newComment)
-                });
-                if (response.ok) {
-                    const updatedPost = await response.json();
-                    // 更新当前帖子
-                    currentDetailPost = updatedPost;
-                    // 更新 posts 数组
-                    const index = posts.findIndex(p => p.id === updatedPost.id);
-                    if (index !== -1) {
-                        posts[index] = updatedPost;
-                    }
-                    // 重新渲染评论
-                    renderComments();
-                    // 清空输入框
-                    commentContentInput.value = '';
-                } else {
-                    const errorData = await response.json();
-                    alert(`添加评论失败: ${errorData.error}`);
-                }
-            } catch (error) {
-                console.error('Error adding comment:', error);
-                alert('添加评论失败，请稍后再试。');
-            }
-        });
-
-        // 点击模态框外部关闭
-        window.addEventListener('click', (event) => {
-            if (event.target == postModal) {
-                postModal.style.display = 'none';
-            }
-            if (event.target == detailModal) {
-                detailModal.style.display = 'none';
-            }
-            if (event.target == calendarModal) {
-                calendarModal.style.display = 'none';
-            }
-            if (event.target == userSelectModal) {
-                // 不允许用户绕过选择，强制选择
-                event.preventDefault();
-            }
-        });
-
-        // 初始渲染
-        let currentDetailPost = null;
-        if (currentUser && (currentUser in users)) {
-            fetchPosts();
-            initializeCoupleCalendar();
-        }
-
-        // 获取帖子的正文内容
-        async function fetchPostContent(url) {
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error('网络响应不是OK');
-                }
-                const data = await response.json();
-                return data.content;
-            } catch (error) {
-                console.error('Error fetching post content:', error);
-                return '';
-            }
-        }
-
-        // 获取属性标签
-        function getAttributeLabel(attribute) {
-            switch(attribute) {
-                case 'sayings':
-                    return '说说';
-                case 'album':
-                    return '相册';
-                case 'wishes':
-                    return '心愿';
-                default:
-                    return '';
-            }
-        }
-
-        // ==== 新增情侣日历功能 ====
-
-        // 初始化情侣日历
-        async function initializeCoupleCalendar() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/cheekin`);
-                const data = await response.json();
-                checkInData = data;
-                updateCoupleCalendarUI();
-            } catch (error) {
-                console.error('Error fetching check-in data:', error);
-            }
-        }
-
-        let checkInData = {}; // 全部打卡数据
-
-        // 更新情侣日历UI
-        function updateCoupleCalendarUI() {
-            const user = currentUser;
-            const partner = user === 'userA' ? 'userB' : 'userA';
-            const userCount = getConsecutiveCheckInDays(user);
-            const partnerCount = getConsecutiveCheckInDays(partner);
-
-            userCheckinCountEl.textContent = `${userCount} 天`;
-            partnerCheckinCountEl.textContent = `${partnerCount} 天`;
-
-            // 检测今天是否已打卡
-            const today = new Date().toISOString().split('T')[0];
-            const userHasCheckedIn = checkInData[today] && checkInData[today].includes(user);
-            checkInBtn.disabled = userHasCheckedIn;
-        }
-
-        // 获取连续打卡天数
-        function getConsecutiveCheckInDays(user) {
-            let count = 0;
-            const today = new Date();
-            while (true) {
-                const dateStr = today.toISOString().split('T')[0];
-                if (checkInData[dateStr] && checkInData[dateStr].includes(user)) {
-                    count++;
-                } else {
-                    break;
-                }
-                today.setDate(today.getDate() - 1);
-            }
-            return count;
-        }
-
-        // 打卡按钮点击事件
-        checkInBtn.addEventListener('click', async () => {
-            try {
-                const response = await fetch(`${API_BASE_URL}/cheekin/checkin`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ user: currentUser })
-                });
-                if (response.ok) {
-                    // 更新打卡数据
-                    await initializeCoupleCalendar();
-                    // 触发爱心动画
-                    triggerHeartAnimation();
-                } else {
-                    const errorData = await response.json();
-                    alert(`打卡失败: ${errorData.error}`);
-                }
-            } catch (error) {
-                console.error('Error during check-in:', error);
-                alert('打卡失败，请稍后再试。');
-            }
-        });
-
-        // 触发爱心动画
-        function triggerHeartAnimation() {
-            const heart = document.createElement('div');
-            heart.classList.add('heart');
-            coupleCalendar.appendChild(heart);
-            // 监听动画结束后移除
-            heart.addEventListener('animationend', () => {
-                heart.remove();
-            });
-        }
-
-        // 情侣日历点击事件（翻转）
-        coupleCalendar.addEventListener('click', (e) => {
-            // 阻止按钮点击事件冒泡
-            if (e.target === checkInBtn || e.target === viewDetails) return;
-            coupleCalendar.classList.toggle('flipped');
-        });
-
-        // 查看详情点击事件
-        viewDetails.addEventListener('click', () => {
-            renderCalendar(currentMonth, currentYear, false);
-            calendarModal.style.display = 'block';
-            // 显示查看Ta的按钮
-            viewPartnerBtn.style.display = 'block';
-        });
-
-        // 关闭日历模态框
-        closeCalendarModalBtn.addEventListener('click', () => {
-            calendarModal.style.display = 'none';
-        });
-
-        // 变量存储当前查看的用户和日期
-        let viewingPartner = false;
-        let currentMonth;
-        let currentYear;
-
-        // 渲染日历
-        async function renderCalendar(month = null, year = null, isPartnerView = false) {
-            viewingPartner = isPartnerView;
-
-            // 清空之前的日历内容
-            calendarContainer.innerHTML = '';
-
-            const today = new Date();
-            currentMonth = month !== null ? month : today.getMonth();
-            currentYear = year !== null ? year : today.getFullYear();
-
-            // 确定查看的用户
-            const viewUser = isPartnerView ? (currentUser === 'userA' ? 'userB' : 'userA') : currentUser;
-
-            // 显示当前查看的用户
-            calendarMonthYear.textContent = `${viewingPartner ? 'Ta' : '你'}  - ${currentYear} 年 ${currentMonth + 1} 月`;
-
-            // 获取天数和第一天是星期几
-            const firstDay = new Date(currentYear, currentMonth).getDay();
-            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-            // 创建日历网格
-            let calendar = document.createElement('div');
-            calendar.classList.add('calendar');
-
-            // 添加星期名称
-            const daysOfWeek = ['日', '一', '二', '三', '四', '五', '六'];
-            daysOfWeek.forEach(day => {
-                const dayName = document.createElement('div');
-                dayName.classList.add('day-name');
-                dayName.textContent = day;
-                calendar.appendChild(dayName);
-            });
-
-            // 填充空白
-            for (let i = 0; i < firstDay; i++) {
-                const emptyCell = document.createElement('div');
-                emptyCell.classList.add('date-cell');
-                calendar.appendChild(emptyCell);
-            }
-
-            // 填充日期
-            for (let date = 1; date <= daysInMonth; date++) {
-                const dateCell = document.createElement('div');
-                dateCell.classList.add('date-cell');
-
-                const dateNumber = document.createElement('div');
-                dateNumber.classList.add('date-number');
-                dateNumber.textContent = date;
-                dateCell.appendChild(dateNumber);
-
-                const dateObj = new Date(currentYear, currentMonth, date);
-                const dateStr = dateObj.toISOString().split('T')[0]; // 格式: YYYY-MM-DD
-
-                // 根据打卡情况添加圆圈颜色
-                if (checkInData[dateStr]) {
-                    const checkIns = checkInData[dateStr];
-                    const circle = document.createElement('div');
-                    circle.classList.add('check-in-circle');
-                    if (checkIns.includes(viewUser) && (checkIns.includes('userA') && checkIns.includes('userB'))) {
-                        circle.classList.add('check-in-both');
-                    } else if (checkIns.includes(viewUser)) {
-                        circle.classList.add(viewUser === 'userA' ? 'check-in-userA' : 'check-in-userB');
-                    } else {
-                        // 未打卡的日期为灰色
-                        circle.style.backgroundColor = 'grey';
-                    }
-                    dateCell.appendChild(circle);
-                } else {
-                    // 未打卡的日期为灰色
-                    dateCell.style.backgroundColor = '#e0e0e0';
-                }
-
-                calendar.appendChild(dateCell);
-            }
-
-            // 清空之前的日历
-            const existingCalendar = calendarContainer.querySelector('.calendar');
-            if (existingCalendar) {
-                existingCalendar.remove();
-            }
-
-            calendarContainer.appendChild(calendar);
-        }
-
-        // 前一个月按钮
-        prevMonthBtn.addEventListener('click', () => {
-            if (currentMonth === 0) {
-                currentMonth = 11;
-                currentYear--;
-            } else {
-                currentMonth--;
-            }
-            renderCalendar(currentMonth, currentYear, viewingPartner);
-        });
-
-        // 后一个月按钮
-        nextMonthBtn.addEventListener('click', () => {
-            if (currentMonth === 11) {
-                currentMonth = 0;
-                currentYear++;
-            } else {
-                currentMonth++;
-            }
-            renderCalendar(currentMonth, currentYear, viewingPartner);
-        });
-
-        // 查看Ta的按钮
-        viewPartnerBtn.addEventListener('click', () => {
-            renderCalendar(currentMonth, currentYear, true);
-            viewPartnerBtn.style.display = 'none'; // 隐藏按钮以防重复点击
-        });
-
-        // 确保 Space 按钮打开情侣日历容器
-        calendarButton.addEventListener('click', () => {
-            coupleCalendarContainer.style.display = 'block';
-        });
-
-        // ==== 重构后的情侣日历逻辑 ====
-
-        // 关闭情侣日历当点击外部区域时
-        window.addEventListener('click', (event) => {
-            if (event.target == coupleCalendarContainer) {
-                coupleCalendarContainer.style.display = 'none';
-            }
-        });
-
     </script>
 
 </body>
